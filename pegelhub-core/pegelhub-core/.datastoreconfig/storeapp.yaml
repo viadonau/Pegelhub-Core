@@ -1,0 +1,10 @@
+data:
+  org: pegelhub-store
+  token: KrHZs-euzNcO6r-Ongyc7TX2X_ssLbaxbABYeNW3Sm8B1ti2s16_c-xrNm6fdUP57I3A8EErwmiQk8Glb_17ng==
+  bucket: pegelhub-data
+  url: none
+telemetry:
+  org: pegelhub-store
+  token: KrHZs-euzNcO6r-Ongyc7TX2X_ssLbaxbABYeNW3Sm8B1ti2s16_c-xrNm6fdUP57I3A8EErwmiQk8Glb_17ng==
+  bucket: pegelhub-telemetry
+  url: none

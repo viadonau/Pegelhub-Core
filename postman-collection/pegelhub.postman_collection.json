@@ -1,0 +1,485 @@
+{
+	"info": {
+		"_postman_id": "18c1f28e-eb58-44a8-82a2-9d15f3075eab",
+		"name": "pegelhub",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27054064"
+	},
+	"item": [
+		{
+			"name": "Metadata",
+			"item": [
+				{
+					"name": "Token",
+					"item": [
+						{
+							"name": "Refresh Token",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/token?apiKey=",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"token"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "apiKey",
+										"value": "{{createApiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/token?apiKey={{createApiKey}}&type=write&description=Description for write token",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"token"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{createApiKey}}"
+										},
+										{
+											"key": "type",
+											"value": "write"
+										},
+										{
+											"key": "description",
+											"value": "Description for write token"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Token",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/token?apiKey=",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"token"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get TokenIds",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/token/admin?apiKey={{createApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"token",
+										"admin"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{createApiKey}}"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Supplier",
+					"item": [
+						{
+							"name": "Get All",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/supplier?apiKey={{readApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"supplier"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{readApiKey}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get All With Measurement",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/supplier/measurement?apiKey={{readApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"supplier",
+										"measurement"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{readApiKey}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get by Id",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/supplier/:uuid?apiKey={{readApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"supplier",
+										":uuid"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{readApiKey}}"
+										}
+									],
+									"variable": [
+										{
+											"key": "uuid",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Supplier",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"stationNumber\": \"STN123\",\r\n    \"stationId\": 123,\r\n    \"stationName\": \"Acme Station\",\r\n    \"stationWater\": \"Lake Acme\",\r\n    \"stationWaterType\": \"F\",\r\n    \"stationManufacturer\": {\r\n        \"stationManufacturerName\": \"Acme Corporation\",\r\n        \"stationManufacturerType\": \"EVSE\",\r\n        \"stationManufacturerFirmwareVersion\": \"1.2.3\",\r\n        \"stationRemark\": \"This station is for employee use only\"\r\n    },\r\n    \"connector\": {\r\n        \"connectorNumber\": \"CONN001\",\r\n        \"manufacturer\": {\r\n            \"organization\": \"Acme Corporation\",\r\n            \"contactPerson\": \"John Doe\",\r\n            \"contactStreet\": \"123 Main St\",\r\n            \"contactPlz\": \"12345\",\r\n            \"location\": \"Anytown, USA\",\r\n            \"contactCountry\": \"United States\",\r\n            \"emergencyNumber\": \"911\",\r\n            \"emergencyNumberTwo\": \"555-1234\",\r\n            \"emergencyMail\": \"emergency@acmecorp.com\",\r\n            \"serviceNumber\": \"800-123-4567\",\r\n            \"serviceNumberTwo\": \"800-555-5555\",\r\n            \"serviceMail\": \"service@acmecorp.com\",\r\n            \"administrationPhoneNumber\": \"888-123-4567\",\r\n            \"administrationPhoneNumberTwo\": \"888-555-5555\",\r\n            \"administrationMail\": \"admin@acmecorp.com\",\r\n            \"contactNodes\": \"node1,node2,node3\"\r\n        },\r\n        \"typeDescription\": \"Type 2, 22kW\",\r\n        \"softwareVersion\": \"1.2.3\",\r\n        \"worksFromDataVersion\": \"1.1.0\",\r\n        \"dataDefinition\": \"OCPP 1.6\",\r\n        \"softwareManufacturer\": {\r\n            \"organization\": \"Acme Corporation\",\r\n            \"contactPerson\": \"John Doe\",\r\n            \"contactStreet\": \"123 Main St\",\r\n            \"contactPlz\": \"12345\",\r\n            \"location\": \"Anytown, USA\",\r\n            \"contactCountry\": \"United States\",\r\n            \"emergencyNumber\": \"911\",\r\n            \"emergencyNumberTwo\": \"555-1234\",\r\n            \"emergencyMail\": \"emergency@acmecorp.com\",\r\n            \"serviceNumber\": \"800-123-4567\",\r\n            \"serviceNumberTwo\": \"800-555-5555\",\r\n            \"serviceMail\": \"service@acmecorp.com\",\r\n            \"administrationPhoneNumber\": \"888-123-4567\",\r\n            \"administrationPhoneNumberTwo\": \"888-555-5555\",\r\n            \"administrationMail\": \"admin@acmecorp.com\",\r\n            \"contactNodes\": \"node1,node2,node3\"\r\n        },\r\n        \"technicallyResponsible\": {\r\n            \"organization\": \"Acme Corporation\",\r\n            \"contactPerson\": \"John Doe\",\r\n            \"contactStreet\": \"123 Main St\",\r\n            \"contactPlz\": \"12345\",\r\n            \"location\": \"Anytown, USA\",\r\n            \"contactCountry\": \"United States\",\r\n            \"emergencyNumber\": \"911\",\r\n            \"emergencyNumberTwo\": \"555-1234\",\r\n            \"emergencyMail\": \"emergency@acmecorp.com\",\r\n            \"serviceNumber\": \"800-123-4567\",\r\n            \"serviceNumberTwo\": \"800-555-5555\",\r\n            \"serviceMail\": \"service@acmecorp.com\",\r\n            \"administrationPhoneNumber\": \"888-123-4567\",\r\n            \"administrationPhoneNumberTwo\": \"888-555-5555\",\r\n            \"administrationMail\": \"admin@acmecorp.com\",\r\n            \"contactNodes\": \"node1,node2,node3\"\r\n        },\r\n        \"operationCompany\": {\r\n            \"organization\": \"Acme Corporation\",\r\n            \"contactPerson\": \"John Doe\",\r\n            \"contactStreet\": \"123 Main St\",\r\n            \"contactPlz\": \"12345\",\r\n            \"location\": \"Anytown, USA\",\r\n            \"contactCountry\": \"United States\",\r\n            \"emergencyNumber\": \"911\",\r\n            \"emergencyNumberTwo\": \"555-1234\",\r\n            \"emergencyMail\": \"emergency@acmecorp.com\",\r\n            \"serviceNumber\": \"800-123-4567\",\r\n            \"serviceNumberTwo\": \"800-555-5555\",\r\n            \"serviceMail\": \"service@acmecorp.com\",\r\n            \"administrationPhoneNumber\": \"888-123-4567\",\r\n            \"administrationPhoneNumberTwo\": \"888-555-5555\",\r\n            \"administrationMail\": \"admin@acmecorp.com\",\r\n            \"contactNodes\": \"node1,node2,node3\"\r\n        },\r\n        \"notes\": \"This connector is located at the employee parking lot.\"\r\n    },\r\n    \"refreshRate\": 60,\r\n    \"accuracy\": 0.95,\r\n    \"mainUsage\": \"Electric Vehicle Charging\",\r\n    \"dataCritically\": \"Critical\",\r\n    \"stationBaseReferenceLevel\": 100.0,\r\n    \"stationReferencePlace\": \"Acme HQ\",\r\n    \"stationWaterKilometer\": 5.5,\r\n    \"stationWaterSide\": \"North\",\r\n    \"stationWaterLatitude\": 37.7749,\r\n    \"stationWaterLongitude\": -122.4194,\r\n    \"stationWaterLatitudem\": 37.7755,\r\n    \"stationWaterLongitudem\": -122.4201,\r\n    \"hsw100\": 50.0,\r\n    \"hsw\": 55.0,\r\n    \"hswReference\": 100,\r\n    \"mw\": 75.0,\r\n    \"mwReference\": 80,\r\n    \"rnw\": 60.0,\r\n    \"rnwReference\": 70,\r\n    \"hsq100\": 80.0,\r\n    \"hsq\": 85.0,\r\n    \"mq\": 90.0,\r\n    \"rnq\": 95.0\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/supplier?apiKey={{writeApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"supplier"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{writeApiKey}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Supplier",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/{{apiPath}}/supplier/:uuid?apiKey={{writeApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"{{apiPath}}",
+										"supplier",
+										":uuid"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{writeApiKey}}"
+										}
+									],
+									"variable": [
+										{
+											"key": "uuid",
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "noauth"
+					},
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Data",
+			"item": [
+				{
+					"name": "Measurement",
+					"item": [
+						{
+							"name": "Get Measurement in Range",
+							"protocolProfileBehavior": {
+								"disableUrlEncoding": false
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/api/v1/measurement/:range?apiKey={{readApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"measurement",
+										":range"
+									],
+									"query": [
+										{
+											"key": "apiKey",
+											"value": "{{readApiKey}}"
+										}
+									],
+									"variable": [
+										{
+											"key": "range",
+											"value": "20d"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Mesurements by Supplier",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseAddress}}:{{port}}/api/v1/measurement/supplier/:range?stationNumber=ninelarge&apiKey={{readApiKey}}",
+									"host": [
+										"{{baseAddress}}"
+									],
+									"port": "{{port}}",
+									"path": [
+										"api",
+										"v1",
+										"measurement",
+										"supplier",
+										":range"
+									],
+									"query": [
+										{
+											"key": "stationNumber",
+											"value": "ninelarge"
+										},
+										{
+											"key": "apiKey",
+											"value": "{{readApiKey}}"
+										}
+									],
+									"variable": [
+										{
+											"key": "range",
+											"value": "20d"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseAddress",
+			"value": "localhost"
+		},
+		{
+			"key": "port",
+			"value": "8080"
+		},
+		{
+			"key": "apiPath",
+			"value": "api/v1"
+		},
+		{
+			"key": "createApiKey",
+			"value": "WOoiHq3tpuFFFEHHRo8ULF5nvzsAURW2cGHqzYS6S2XrsgznFlmfq2asTRuxPALd"
+		},
+		{
+			"key": "readApiKey",
+			"value": "N1epdBwQzQRSzfKnTaxKqxLjeCc67q6owXQUCEzF5rJjdjl5Xdxg8aey6sKiG36A"
+		},
+		{
+			"key": "writeApiKey",
+			"value": "qbsyRm4I0Js0hT4YqBuXnlNUCyKXvhCHOCmwkAHciIPV2qHRA0qfClTfKWiaTFBK"
+		}
+	]
+}

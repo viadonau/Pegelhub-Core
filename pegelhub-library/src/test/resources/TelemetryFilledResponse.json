@@ -1,0 +1,16 @@
+{
+  "74bcffac-8fa6-41ac-aa9d-53d082447226": {
+    "2022-06-09T16:56:38.768Z": {
+      "stationIPAddressExtern": "10.10.1.38",
+      "temperatureAir": 10.0,
+      "cycleTime": 10,
+      "performanceElectricitySupply": 7.321,
+      "performanceVoltageBattery": 13.6,
+      "performanceVoltageSupply": 10.0,
+      "temperatureWater": 18.0,
+      "fieldStrengthTransmission": -74.0,
+      "performanceElectricityBattery": -3.323,
+      "stationIPAddressIntern": "168.158.1.38"
+    }
+  }
+}
