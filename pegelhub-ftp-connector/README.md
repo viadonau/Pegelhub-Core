@@ -21,7 +21,7 @@ Prerequisites to install and use the FTP-Connector are:
 1) Build the pegelhub-ftp-connector project:
     * Open the project inside of `../pegelhub-ftp-connector`
         * *OR* access project via CMD ( / Powershell) under the same path
-    * In Terminal, execute command `mvn clean package -DskipTests` (Tests are currently failing, therefor skipping)
+    * In Terminal, execute command `mvn clean package -DskipTests` (Tests are currently failing, therefore skipping)
     * After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
       the `pegelhub-ftp-connector/target` folder. The .jar and `properties.yaml` have to be in the same folder.
         * Move the new .jar file out of the `/target` folder into `pegelhub-ftp-connector`
@@ -29,7 +29,7 @@ Prerequisites to install and use the FTP-Connector are:
           starting the FTP-Connector
 
 The `properties.yaml` file stores information about the received data, including the provider and the needed API-Key for
-communication between "Pegelhub" and the FTP-Connector.
+communication between the Pegelhub-Core and the FTP-Connector.
 
 ## How to use
 
@@ -48,7 +48,7 @@ As an example, a valid command could be:
 
 * The coreAddress is 127.0.0.1
 * The Port is 8081
-* The FTP-Server address is ftp.ServerName.org (could also be a number like the coreAddress)
+* The FTP-Server address is ftp.ServerName.org (could also be an IP-Address like the coreAddress)
 * The FTP-Server port is 21
 * The username is pegelReader
 * The password is securePassword123
@@ -88,7 +88,7 @@ order as listed below:
 
 ### password
 
-* The password, which is used by the user(name) to authenticate himself
+* The password, which is used by the user to authenticate himself
 
 ### path
 
@@ -121,5 +121,3 @@ remains on a different version.
 In IntelliJ IDEA, make sure, that in the Project Settings (*accessible via Project
 Structure == Ctrl + Alt + Shift + S*) you have selected the correct JDK. Versions lower or higher than 18 will notably
 lead to a NoSuchFieldError.
-
-If IntelliJ IDEA does not save the correct JDK, remove any additional JDKs except for openJDK 18. 
