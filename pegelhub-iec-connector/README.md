@@ -45,9 +45,15 @@ file for the IEC Hub library's configuration as a supplier. This includes the AP
     Use the connection.send() method to send measurements to the IEC server.
 
 
-### Testing  
+### Testing
 
 The ```TestPegel``` represents the IEC sample server used for testing purposes. You can query data from this server.
+
+In the [SampleServer.java](./src/main/java/TestPegel/SampleServer.java) class you can find the IEC Test Server which is only for testing.
+If you did the configuration right you only need to start the [SampleServer.java](./src/main/java/TestPegel/SampleServer.java).
+Then you will get a protocol on your console and can see the Bind Address, Port, IAO length, CA length and the COT length
+Therefore the Test worked.
+It is also possible to change the settings for what you want/need in the test server.
 
 
 
