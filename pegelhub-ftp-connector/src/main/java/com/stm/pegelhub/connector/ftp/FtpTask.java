@@ -100,7 +100,7 @@ public class FtpTask extends TimerTask {
             for (int i = files.length-1; i > 0; i--) {
                 FTPFile file = files[i];
                 parseFile(file).forEach(entries::add);
-                if(files.length-10 == i) {
+                if (files.length-10 == i) {
                     break;
                 }
             }
@@ -108,10 +108,8 @@ public class FtpTask extends TimerTask {
             entries.forEach(entry -> {
                 List<Measurement> convertedMeasurement = convertEntryToMeasurement(entry);
                 communicator.sendMeasurements(convertedMeasurement);
-                System.out.println("sent measurements");
             });
 
-            System.out.println("sent all measurements");
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
         } finally {
