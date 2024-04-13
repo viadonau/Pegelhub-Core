@@ -12,12 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.lang.management.ManagementFactory;
-import java.lang.management.MemoryMXBean;
-import java.net.InetAddress;
 import java.time.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FtpTask extends TimerTask {
@@ -98,20 +94,24 @@ public class FtpTask extends TimerTask {
                 return;
             }
 
-            List<Measurement> measurements = null;
-
             // 2)
+            List<Entry> entries = new ArrayList<>();
 
-                measurements = Arrays.stream(files)
-                        .flatMap(this::parseFile)
-                        .flatMap(this::convertEntryToMeasurementStream)
-                        .collect(Collectors.toList());
-
-
-            // 3)
-            if (!measurements.isEmpty()) {
-                communicator.sendMeasurements(measurements);
+            for (int i = files.length-1; i > 0; i--) {
+                FTPFile file = files[i];
+                parseFile(file).forEach(entries::add);
+                if(files.length-10 == i) {
+                    break;
+                }
             }
+
+            entries.forEach(entry -> {
+                List<Measurement> convertedMeasurement = convertEntryToMeasurement(entry);
+                communicator.sendMeasurements(convertedMeasurement);
+                System.out.println("sent measurements");
+            });
+
+            System.out.println("sent all measurements");
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
         } finally {
@@ -172,7 +172,7 @@ public class FtpTask extends TimerTask {
         return fileStream;
     }
 
-    private Stream<Measurement> convertEntryToMeasurementStream(Entry e) {
+    private List<Measurement> convertEntryToMeasurement(Entry e) {
         return e.getValues().entrySet().stream().map(value -> {
             if (!Util.canParseDouble(value.getValue())) {
                 return null;
@@ -185,6 +185,6 @@ public class FtpTask extends TimerTask {
             m.getInfos().put("ID", String.valueOf(influxID.getIDValue()));
             influxID.addID();
             return m;
-        }).filter(Objects::nonNull);
+        }).filter(Objects::nonNull).toList();
     }
 }
