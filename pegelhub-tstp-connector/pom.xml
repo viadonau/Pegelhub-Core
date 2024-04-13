@@ -7,13 +7,16 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.7.9</version>
+        <version>3.2.4</version>
         <relativePath/>
     </parent>
 
     <groupId>com.stm.pegelhub</groupId>
     <version>2023.12</version>
     <artifactId>pegelhub-tstp-connector</artifactId>
+
+    <name>Pegelhub TSTP Connector</name>
+    <description>Project for Pegelhub TSTP Connector</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,6 +35,12 @@
             <groupId>com.stm.pegelhub.lib</groupId>
             <artifactId>pegelhub-library</artifactId>
             <version>${pegelhub-library.version}</version>
+        </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
         <!-- Logging -->
