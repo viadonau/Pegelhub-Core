@@ -62,7 +62,7 @@ Holds the configuration for the Spring project and the Startup
 <br> 
 <br>
 
-## Needed Software
+## Needed Software for local development
 
 ### Windows
 Download [Docker Desktop](https://www.docker.com/products/docker-desktop/).
@@ -175,7 +175,6 @@ file uses `LF` as a line separator.
 
 <br> 
 <br>
-
 -----------------------------------------------------------------
 
 ## Rolling updates
@@ -196,4 +195,94 @@ docker-compose up -d --scale starter=3 --no-recreate
 ```
 
 
+<br> 
+<br>
+-----------------------------------------------------------------
 
+# Server Environment Setup
+
+## Preparation on Local Development Machine
+Follow these steps on your local machine to prepare the application and its environment for deployment:
+
+### 1. Build the Application
+Execute the following command to build the application:
+   ```bash
+   mvn clean package
+   ```
+
+### 2. Build Docker Images
+Build Docker images for `registry`, `starter` and `proxy`. For instance, to build the `registry`:
+   ```bash
+   cd ./service-registry
+   docker build . --tag registry:latest
+   docker save registry:latest > registry.tar
+   ```
+Repeat the steps above for `starter` and `proxy`.
+
+### 3. Organize Deployment Files
+Gather the following files into one directory:
+    - The Docker `.tar` images (`registry.tar`, `starter.tar`, `proxy.tar`)
+    - `docker-compose.yml`
+    - `init-influxdb.sh`
+    - `testenvironment.vars`
+    - `.datastoreconfig`
+
+### 4. Compress the Directory
+Use this command to compress the directory:
+   ```bash
+   tar -czvf pegelhub.tar.gz directory_to_compress
+   ```
+
+### 5. Transfer to Server
+Send the compressed file to the server using SCP:
+   ```bash
+   scp pegelhub.tar.gz YOUR_USER@IP_OF_SERVER:~
+   ```
+
+## Setup on the Server
+Execute these steps on your server to deploy the application:
+
+### 1. Install Docker and Docker Compose
+Install Docker and Docker Compose using:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install docker.io docker-compose
+   ```
+
+### 2. Decompress the Directory
+Unpack the sent directory:
+   ```bash
+   tar -xzvf pegelhub.tar.gz
+   ```
+
+### 3. Clean Up
+Remove the compressed file:
+   ```bash
+   rm pegelhub.tar.gz
+   ```
+
+### 4. Navigate to the Deployment Directory
+Navigate to the directory containing the deployment files:
+   ```bash
+   cd directory_to_compress
+   ```
+
+### 5. Set File Permissions
+Make the init-influxdb.sh script executable:
+   ```bash
+   chmod a+x init-influxdb.sh
+   ```
+
+### 6. Load Docker Images
+Load the Docker images:
+   ```bash
+   docker load -i registry.tar
+   docker load -i starter.tar
+   docker load -i proxy.tar
+   ```
+
+### 7. Launch Containers
+Start all the containers using Docker Compose:
+   ```bash
+   docker-compose --env-file testenvironment.vars up --build -d
+   ```
