@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class FtpTask extends TimerTask {
@@ -34,7 +36,7 @@ public class FtpTask extends TimerTask {
         this.parser = parser;
         this.properties = new ApplicationPropertiesImpl(conOpts.propertiesFile());
         this.influxID = new InfluxID(communicator, properties);
-        this.durationToLookBack = Duration.ofHours(50000); //conOpts.readDelay().plus(conOpts.readDelay());
+        this.durationToLookBack = conOpts.readDelay();
     }
 
     /**
@@ -80,13 +82,13 @@ public class FtpTask extends TimerTask {
                         && file.getName() != null
                         && file.getTimestampInstant() != null
                         && file.getName().endsWith(parser.getType().fileSuffix)
-                        && file.getTimestampInstant().isAfter(Instant.now().minus(durationToLookBack))
+                        && file.getTimestampInstant().isAfter(getLookBackTimestamp())
                         && !processedFiles.contains(file.getName());
 
             FTPFile[] files;
             try {
                 System.out.println(conOpts.path());
-                files = ftp.listFiles(conOpts.path());
+                files = ftp.listFiles(conOpts.path(), filter);
 
 
             } catch (IOException e) {
@@ -95,21 +97,15 @@ public class FtpTask extends TimerTask {
             }
 
             // 2)
-            List<Entry> entries = new ArrayList<>();
+            List<Measurement> measurements = Arrays.stream(files)
+                    .flatMap(this::parseFile)
+                    .flatMap(this::convertEntryToMeasurementStream)
+                    .collect(Collectors.toList());
 
-            for (int i = files.length-1; i > 0; i--) {
-                FTPFile file = files[i];
-                parseFile(file).forEach(entries::add);
-                if (files.length-10 == i) {
-                    break;
-                }
+            // 3)
+            if (!measurements.isEmpty()) {
+                communicator.sendMeasurements(measurements);
             }
-
-            entries.forEach(entry -> {
-                List<Measurement> convertedMeasurement = convertEntryToMeasurement(entry);
-                communicator.sendMeasurements(convertedMeasurement);
-            });
-
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
         } finally {
@@ -124,6 +120,13 @@ public class FtpTask extends TimerTask {
                 LOG.error("Couldn't disconnect!", e);
             }
         }
+    }
+
+    private Instant getLookBackTimestamp() {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.systemDefault());
+        return currentTime.minus(durationToLookBack)
+                .minus(Duration.of(currentTime.getOffset().getTotalSeconds(), ChronoUnit.SECONDS))
+                .toInstant();
     }
 
     private Stream<Entry> parseFile(FTPFile file) {
@@ -170,7 +173,7 @@ public class FtpTask extends TimerTask {
         return fileStream;
     }
 
-    private List<Measurement> convertEntryToMeasurement(Entry e) {
+    private Stream<Measurement> convertEntryToMeasurementStream(Entry e) {
         return e.getValues().entrySet().stream().map(value -> {
             if (!Util.canParseDouble(value.getValue())) {
                 return null;
@@ -183,6 +186,6 @@ public class FtpTask extends TimerTask {
             m.getInfos().put("ID", String.valueOf(influxID.getIDValue()));
             influxID.addID();
             return m;
-        }).filter(Objects::nonNull).toList();
+        }).filter(Objects::nonNull);
     }
 }
