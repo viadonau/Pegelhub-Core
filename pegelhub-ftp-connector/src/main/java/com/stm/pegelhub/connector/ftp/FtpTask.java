@@ -175,12 +175,11 @@ public class FtpTask extends TimerTask {
             if (!Util.canParseDouble(value.getValue())) {
                 return null;
             }
-            influxID.calculateID();
             var m = new Measurement();
             m.setTimestamp(value.getKey().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             m.getFields().put("value", Double.parseDouble(value.getValue()));
+            m.getFields().put("ID", (double) influxID.getIDValue());
             m.getInfos().putAll(e.getInfos());
-            m.getInfos().put("ID", String.valueOf(influxID.getIDValue()));
             influxID.addID();
             return m;
         }).filter(Objects::nonNull).toList();

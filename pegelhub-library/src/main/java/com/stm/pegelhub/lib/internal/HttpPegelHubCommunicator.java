@@ -622,8 +622,11 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
 
         for(Measurement m : measurements)
         {
-            Long work = Long.parseLong(m.getInfos().get("ID"));
-            IDs.add(work);
+            //TODO needs to be changed at some point - but first need to find out why ID is needed
+            if(m.getFields().containsKey("ID")){
+                Long work = Math.round(m.getFields().get("ID"));
+                IDs.add(work);
+            }
         }
         return IDs;
     }
