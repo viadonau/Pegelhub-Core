@@ -20,7 +20,7 @@ import java.util.Properties;
 public class Main {
 
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-    private static final String CONFIG = "src/main/resources/config.properties";
+    private static final String CONFIG = "/app/test/config.properties";
     private static IccConnector _icc;
 
     private static Duration readDelay(String delay) {
@@ -53,8 +53,8 @@ public class Main {
 
         try {
             _icc = new IccConnector(
-                    new URL(sourceUrl), "source_properties.yaml",
-                    new URL(sinkUrl), "sink_properties.yaml",
+                    new URL(sourceUrl), "/app/test/source_properties.yaml",
+                    new URL(sinkUrl), "/app/test/sink_properties.yaml",
                     sourceStationNumbersList, delay, refreshInterval
             );
         } catch (Exception ex) {
