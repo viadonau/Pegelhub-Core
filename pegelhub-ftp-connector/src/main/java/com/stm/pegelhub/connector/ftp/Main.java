@@ -12,8 +12,8 @@ import java.util.Properties;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final String FTP_CONFIG_PATH = "/app/test/config.properties";
-    private static final String CORE_PROPERTIES_PATH = "/app/test/properties.yaml";
+    private static final String FTP_CONFIG_PATH = "/app/files/config.properties";
+    private static final String CORE_PROPERTIES_PATH = "/app/files/properties.yaml";
 
 
     /**
