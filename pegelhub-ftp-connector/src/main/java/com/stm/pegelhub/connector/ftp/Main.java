@@ -4,64 +4,23 @@ import com.stm.pegelhub.connector.ftp.fileparsing.ParserType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.Properties;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final String FTP_CONFIG_PATH = "/app/files/config.properties";
+    private static final String CORE_PROPERTIES_PATH = "/app/files/properties.yaml";
 
-    /**
-     * parses the given arguments to the needes properties to connect to the FTP server
-     * @param args
-     * @return
-     * @throws UnknownHostException
-     */
-    private static ConnectorOptions readArguments(String[] args) throws UnknownHostException {
-        if (args.length < 7 || args.length > 10) {
-            LOGGER.error("Wrong amount of arguments specified!");
-            LOGGER.error("java -jar FTPConnector.jar <core IP> <core port> <FTP IP> <FTP port> <username> <password> <path> [<parser type>] [<readDuration h/m/s>] [<properties file>]");
-            throw new IllegalArgumentException("Wrong amount of arguments specified!");
-        }
-        ParserType parserType = ParserType.valueOfName(args[7]);
-        if (parserType == null) {
-            parserType = ParserType.ASC;
-        }
-        Duration readDelay = getReadDelay(args);
-        String propertiesFile = null;
-        if (args.length == 10) {
-            propertiesFile = args[9];
-        }
-
-        return new ConnectorOptions(InetAddress.getByName(args[0]), Integer.parseInt(args[1]),
-                InetAddress.getByName(args[2]), Integer.parseInt(args[3]),
-                args[4], args[5],
-                args[6], parserType,
-                readDelay, propertiesFile);
-    }
-
-    private static Duration getReadDelay(String[] args) {
-        Duration readDelay;
-        if (args.length >= 9) {
-            String number = args[8].substring(0, args[8].length() - 1);
-            char unit = args[8].charAt(args[8].length() - 1);
-            readDelay = switch (unit) {
-                case 'h', 'H' -> Duration.ofHours(Long.parseLong(number));
-                case 'm', 'M' -> Duration.ofMinutes(Long.parseLong(number));
-                case 's', 'S' -> Duration.ofSeconds(Long.parseLong(number));
-                default -> throw new IllegalArgumentException(String.format("Unknown unit type for time: %c", unit));
-            };
-        } else {
-            readDelay = Duration.ofHours(2);
-        }
-        return readDelay;
-    }
 
     /**
      * Main method. Initiates the connection to the FTP Server
      */
     public static void main(String[] args) throws Exception {
-        var connOpts = readArguments(args);
+        var connOpts = getConnectorOptions();
         var connector = new FtpConnector(connOpts);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOGGER.info("Shutdown issued. Stopping connector...");
@@ -73,5 +32,70 @@ public class Main {
             }
             LOGGER.info("OK");
         }));
+    }
+
+
+    /**
+     * Parses the given arguments from the config file to the needed properties to connect to the FTP server
+     *
+     * @return the parsed ConnectorOptions
+     * @throws IOException if an error occurs while reading the properties
+     */
+    private static ConnectorOptions getConnectorOptions() throws IOException {
+        Properties props = getProperties();
+
+        ParserType parserType = ParserType.valueOfName(props.getProperty("parser.type"));
+        if (parserType == null) {
+            parserType = ParserType.ASC;
+        }
+
+        Duration readDelay = parseReadDelay(props.getProperty("read.delay"));
+
+        return new ConnectorOptions(
+                InetAddress.getByName(props.getProperty("core.address")),
+                Integer.parseInt(props.getProperty("core.port")),
+                InetAddress.getByName(props.getProperty("ftp.address")),
+                Integer.parseInt(props.getProperty("ftp.port")),
+                props.getProperty("ftp.user"),
+                props.getProperty("ftp.password"),
+                props.getProperty("ftp.path"),
+                parserType,
+                readDelay,
+                CORE_PROPERTIES_PATH
+        );
+    }
+
+    /**
+     * Returns all stored properties from provided property file.
+     *
+     * @return Properties.
+     * @throws IOException If file does not exist.
+     */
+    private static Properties getProperties() throws IOException {
+        Properties props = new Properties();
+        props.load(new FileInputStream(FTP_CONFIG_PATH));
+        return props;
+    }
+
+    /**
+     * Parses the string to a Duration Object if the format is correct
+     *
+     * @param delayToParse the string to parse
+     * @return the parsed Duration
+     */
+    private static Duration parseReadDelay(String delayToParse) {
+        if (delayToParse.isEmpty()) {
+            return Duration.ofHours(2);
+        }
+
+        String delayDuration = delayToParse.substring(0, delayToParse.length() - 1);
+        char unit = delayToParse.charAt(delayToParse.length() - 1);
+
+        return switch (unit) {
+            case 'h', 'H' -> Duration.ofHours(Long.parseLong(delayDuration));
+            case 'm', 'M' -> Duration.ofMinutes(Long.parseLong(delayDuration));
+            case 's', 'S' -> Duration.ofSeconds(Long.parseLong(delayDuration));
+            default -> throw new IllegalArgumentException(String.format("Unknown unit type for time: %c", unit));
+        };
     }
 }
