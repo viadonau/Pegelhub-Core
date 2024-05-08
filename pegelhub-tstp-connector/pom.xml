@@ -15,7 +15,7 @@
     <version>2023.12</version>
     <artifactId>pegelhub-tstp-connector</artifactId>
 
-    <name>Pegelhub TSTP Connector</name>
+    <name>pegelhub-tstp-connector</name>
     <description>Project for Pegelhub TSTP Connector</description>
 
     <properties>
