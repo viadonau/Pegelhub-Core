@@ -1,6 +1,7 @@
 package com.stm.pegelhub.connector.tstp;
 
-import com.stm.pegelhub.connector.tstp.xmlparsing.ConnectorMode;
+import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
+import com.stm.pegelhub.connector.tstp.model.ConnectorMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +15,8 @@ import java.util.Properties;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final String TSTP_CONFIG_PATH = "/app/files/config.properties";
-    private static final String CORE_PROPERTIES_PATH = "/app/files/properties.yaml";
+    private static final String TSTP_CONFIG_PATH = "pegelhub-tstp-connector/src/main/resources/config.properties";
+    private static final String CORE_PROPERTIES_PATH = "pegelhub-tstp-connector/properties.yaml";
 
 
     /**
@@ -58,7 +59,7 @@ public class Main {
         return new ConnectorOptions(
                 InetAddress.getByName(props.getProperty("core.address")),
                 Integer.parseInt(props.getProperty("core.port")),
-                InetAddress.getByName(props.getProperty("tstp.address")),
+                props.getProperty("tstp.address"),
                 Integer.parseInt(props.getProperty("tstp.port")),
                 props.getProperty("tstp.user"),
                 props.getProperty("tstp.password"),

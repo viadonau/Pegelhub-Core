@@ -1,4 +1,4 @@
-package com.stm.pegelhub.connector.tstp.xmlparsing;
+package com.stm.pegelhub.connector.tstp.model;
 
 public enum ConnectorMode {
     READ("read"),
