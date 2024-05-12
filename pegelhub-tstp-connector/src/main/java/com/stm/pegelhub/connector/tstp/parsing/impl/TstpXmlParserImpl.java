@@ -1,6 +1,8 @@
-package com.stm.pegelhub.connector.tstp.parsing;
+package com.stm.pegelhub.connector.tstp.parsing.impl;
 
-import com.stm.pegelhub.connector.tstp.model.TSD;
+import com.stm.pegelhub.connector.tstp.parsing.TstpXmlParser;
+import com.stm.pegelhub.connector.tstp.parsing.model.XmlGetResponse;
+import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
 import com.stm.pegelhub.lib.model.Measurement;
 
 import javax.xml.bind.JAXBContext;
@@ -13,13 +15,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TstpParser {
+public class TstpXmlParserImpl implements TstpXmlParser {
 
-    public List<Measurement> parseXmlToMeasurements(String xml) {
-        TSD responseObject = unmarshalXml(xml);
+    public List<Measurement> parseXmlGetToMeasurements(String xml) {
+        XmlGetResponse responseObject = unmarshalXml(xml);
         String[] rawMeasurements = extractRawMeasurements(responseObject);
 
         return parseRawMeasurements(rawMeasurements);
+    }
+
+    public XmlQueryResponse parseXmlCatalog(String xmlCatalog) {
+        return unmarshalXmlCatalog(xmlCatalog);
+    }
+
+    private XmlQueryResponse unmarshalXmlCatalog(String xmlCatalog) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(XmlQueryResponse.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader reader = new StringReader(xmlCatalog);
+
+            return (XmlQueryResponse) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            throw new RuntimeException("There was an error unmarshalling the XML Catalog");
+        }
     }
 
     private List<Measurement> parseRawMeasurements(String[] rawMeasurements) {
@@ -49,21 +67,21 @@ public class TstpParser {
         return measurements;
     }
 
-    private String[] extractRawMeasurements(TSD tsd) {
-        String rawData = tsd.getData();
+    private String[] extractRawMeasurements(XmlGetResponse xmlGetResponse) {
+        String rawData = xmlGetResponse.getData();
         String[] m = rawData.split("\\[")[2].split("\n");
         m[m.length - 1] = m[m.length - 1].replace("]]", "");
 
         return m;
     }
 
-    private TSD unmarshalXml(String xml) {
+    private XmlGetResponse unmarshalXml(String xml) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(TSD.class);
+            JAXBContext jaxbContext = JAXBContext.newInstance(XmlGetResponse.class);
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             StringReader reader = new StringReader(xml);
 
-            return (TSD) unmarshaller.unmarshal(reader);
+            return (XmlGetResponse) unmarshaller.unmarshal(reader);
         } catch (JAXBException e) {
             throw new RuntimeException("There was an error unmarshalling the XML");
         }

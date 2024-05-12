@@ -1,7 +1,9 @@
 package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
+import com.stm.pegelhub.connector.tstp.communication.impl.TstpCommunicatorImpl;
 import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
+import com.stm.pegelhub.connector.tstp.task.impl.CatalogHandlerImpl;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.PegelHubCommunicatorFactory;
 
@@ -16,13 +18,13 @@ public class TstpTaskFactory {
                         conOpt.coreAddress().getHostAddress(),
                         conOpt.corePort())), conOpt.propertiesFile());
 
-        TstpCommunicator tstpCommunicator = new TstpCommunicator(
+        TstpCommunicator tstpCommunicator = new TstpCommunicatorImpl(
                 conOpt.tstpAddress(),
                 conOpt.tstpPort(),
                 conOpt.username()+conOpt.password());
 
         return switch (conOpt.connectorMode()) {
-            case READ -> new TstpReader(phCommunicator, tstpCommunicator, conOpt.readDelay());
+            case READ -> new TstpReader(phCommunicator, tstpCommunicator, conOpt.readDelay(), new CatalogHandlerImpl(tstpCommunicator));
             case WRITE -> new TstpWriter(phCommunicator, tstpCommunicator, conOpt.readDelay());
         };
     }

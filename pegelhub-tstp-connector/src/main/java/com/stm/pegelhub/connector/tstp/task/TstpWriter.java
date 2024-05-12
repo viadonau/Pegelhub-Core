@@ -1,9 +1,7 @@
 package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
-import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
-import com.stm.pegelhub.lib.internal.ApplicationProperties;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ public class TstpWriter extends TimerTask {
     @Override
     public void run() {
         try {
-            List<Measurement> measurements = tstpCommunicator.getMeasurements(12,getLookBackTimestamp(),Instant.now(),"1");
+            List<Measurement> measurements = tstpCommunicator.getMeasurements("12",getLookBackTimestamp(),Instant.now(),"1");
             System.out.println("parsed measurements");
             if (!measurements.isEmpty()) {
                 phCommunicator.sendMeasurements(measurements);

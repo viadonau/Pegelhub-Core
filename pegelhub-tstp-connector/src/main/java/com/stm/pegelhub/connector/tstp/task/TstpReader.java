@@ -18,11 +18,13 @@ public class TstpReader extends TimerTask {
     private final TstpCommunicator tstpCommunicator;
     private final PegelHubCommunicator phCommunicator;
     private final Duration durationToLookBack;
+    private final CatalogHandler catalogHandler;
 
-    public TstpReader(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, Duration durationToLookBack) {
+    public TstpReader(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, Duration durationToLookBack, CatalogHandler catalogHandler) {
         this.phCommunicator = phCommunicator;
         this.durationToLookBack = durationToLookBack;
         this.tstpCommunicator = tstpCommunicator;
+        this.catalogHandler = catalogHandler;
     }
 
     /**
@@ -32,11 +34,12 @@ public class TstpReader extends TimerTask {
     @Override
     public void run() {
         try {
-            List<Measurement> measurements = tstpCommunicator.getMeasurements(12,getLookBackTimestamp(),Instant.now(),"1");
-            System.out.println("parsed measurements");
+            String zrid = catalogHandler.getZrid();
+            List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(),Instant.now(),"1");
+            LOG.info("Read in measurements from tstp server");
             if (!measurements.isEmpty()) {
                 phCommunicator.sendMeasurements(measurements);
-                System.out.println("sent measurements");
+                LOG.info("Sent measurements to core");
             }
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
