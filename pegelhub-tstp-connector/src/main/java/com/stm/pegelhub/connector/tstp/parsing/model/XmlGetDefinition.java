@@ -1,9 +1,13 @@
 package com.stm.pegelhub.connector.tstp.parsing.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 
+@Getter @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public class XmlGetDefinition {
     @XmlAttribute(name = "REIHENART")
@@ -18,52 +22,4 @@ public class XmlGetDefinition {
     private String len;
     @XmlAttribute(name = "ANZ")
     private String anz;
-
-    public String getReihenart() {
-        return reihenart;
-    }
-
-    public void setReihenart(String reihenart) {
-        this.reihenart = reihenart;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public String getEinheit() {
-        return einheit;
-    }
-
-    public void setEinheit(String einheit) {
-        this.einheit = einheit;
-    }
-
-    public String getLen() {
-        return len;
-    }
-
-    public void setLen(String len) {
-        this.len = len;
-    }
-
-    public String getAnz() {
-        return anz;
-    }
-
-    public void setAnz(String anz) {
-        this.anz = anz;
-    }
-
-    public String getDefArt() {
-        return defArt;
-    }
-
-    public void setDefArt(String defArt) {
-        this.defArt = defArt;
-    }
 }
