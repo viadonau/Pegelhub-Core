@@ -24,8 +24,15 @@ public class TstpTaskFactory {
                 conOpt.username()+conOpt.password());
 
         return switch (conOpt.connectorMode()) {
-            case READ -> new TstpReader(phCommunicator, tstpCommunicator, conOpt.readDelay(), new CatalogHandlerImpl(tstpCommunicator));
-            case WRITE -> new TstpWriter(phCommunicator, tstpCommunicator, conOpt.readDelay());
+            case READ -> new TstpReader(phCommunicator,
+                    tstpCommunicator,
+                    conOpt.readDelay(),
+                    new CatalogHandlerImpl(tstpCommunicator));
+            case WRITE -> new TstpWriter(phCommunicator,
+                    tstpCommunicator,
+                    conOpt.readDelay().toSeconds()+"s",
+                    conOpt.stationNumber(),
+                    new CatalogHandlerImpl(tstpCommunicator));
         };
     }
 }

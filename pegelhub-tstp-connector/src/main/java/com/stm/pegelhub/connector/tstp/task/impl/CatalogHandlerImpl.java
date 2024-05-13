@@ -21,7 +21,7 @@ public class CatalogHandlerImpl implements CatalogHandler {
     }
 
     private void refreshCatalog() {
-        catalog = communicator.getCatalog(Instant.now(), Instant.now(), "asdf");
+        catalog = communicator.getCatalog();
         this.latestRefresh = Instant.now();
     }
 

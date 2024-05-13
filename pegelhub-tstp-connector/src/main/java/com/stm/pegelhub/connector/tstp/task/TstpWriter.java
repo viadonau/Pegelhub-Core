@@ -6,24 +6,23 @@ import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 //so far same as reader
 public class TstpWriter extends TimerTask {
-    private static final Logger LOG = LoggerFactory.getLogger(TstpReader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TstpWriter.class);
     private final TstpCommunicator tstpCommunicator;
     private final PegelHubCommunicator phCommunicator;
-    private final Duration durationToLookBack;
+    private final String durationToLookBack;
+    private final String stationNumber;
+    private final CatalogHandler catalogHandler;
 
-    public TstpWriter(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, Duration durationToLookBack) {
+    public TstpWriter(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, String durationToLookBack, String stationNumber, CatalogHandler catalogHandler) {
         this.phCommunicator = phCommunicator;
         this.durationToLookBack = durationToLookBack;
         this.tstpCommunicator = tstpCommunicator;
+        this.stationNumber = stationNumber;
+        this.catalogHandler = catalogHandler;
     }
 
     /**
@@ -33,21 +32,27 @@ public class TstpWriter extends TimerTask {
     @Override
     public void run() {
         try {
-            List<Measurement> measurements = tstpCommunicator.getMeasurements("12",getLookBackTimestamp(),Instant.now(),"1");
-            System.out.println("parsed measurements");
+            //change to durationToLookBack
+            List<Measurement> measurements = (List<Measurement>) phCommunicator.getMeasurementsOfStation(stationNumber, "2h");
+            LOG.info("Fetched measurements from PH Core");
+
+            String zrid = catalogHandler.getZrid();
             if (!measurements.isEmpty()) {
-                phCommunicator.sendMeasurements(measurements);
-                System.out.println("sent measurements");
+                tstpCommunicator.sendMeasurements(zrid, measurements);
+                LOG.info("Sent measurements to tstp-server");
             }
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
         }
     }
 
-    private Instant getLookBackTimestamp() {
-        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.systemDefault());
-        return currentTime.minus(durationToLookBack)
-                .minus(Duration.of(currentTime.getOffset().getTotalSeconds(), ChronoUnit.SECONDS))
-                .toInstant();
+    @Override
+    public boolean cancel() {
+        try {
+            phCommunicator.close();
+            return super.cancel();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

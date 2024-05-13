@@ -1,7 +1,7 @@
 ---
-apiToken: "xRAu6eu4YK051zL7NDlmZePgEN8I6fSzamQYMOjNHgubItpTi87Tf7qMDmGAlfj4"
-lastTokenRefresh: "2024-05-10T17:15:30.559907686"
-isSupplier: true
+apiToken: "h3vBqCjdm6U228ipOjdZRlpKDZaZiSjaOblLsGJOOBV8dxxjRMR7Kwc8vI1iWOdg"
+lastTokenRefresh: "2024-05-13T11:43:30.559907686"
+isSupplier: false
 supplier:
   number: "tstp-test"
   id: 8030
@@ -112,15 +112,15 @@ supplier:
   mq: 4.0
   rnq: 23.3
 taker:
-  number: "ftp large"
-  id: 222111
+  number: "tstp-test"
+  id: 12334
   manufacturer:
     name: "man"
     systemName: "male"
     firmwareVersion: "1.0.1"
     remark: "none"
   connector:
-    number: "82246"
+    number: "2342"
     contact_manufacturer:
       organization: ""
       contactPerson: ""
