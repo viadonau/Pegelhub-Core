@@ -8,8 +8,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
 public class TstpConfigParserImpl implements TstpConfigParser {
@@ -21,12 +19,6 @@ public class TstpConfigParserImpl implements TstpConfigParser {
         this.CORE_PROPERTIES_PATH = corePropertiesPath;
     }
 
-    /**
-     * Parses the given arguments from the config file to the needed properties to connect to the FTP server
-     *
-     * @return the parsed ConnectorOptions
-     * @throws IOException if an error occurs while reading the properties
-     */
     @Override
     public ConnectorOptions getConnectorOptions() throws IOException {
         Properties props = getProperties();
@@ -38,8 +30,6 @@ public class TstpConfigParserImpl implements TstpConfigParser {
 
         Duration readDelay = parseReadDelay(props.getProperty("connector.readDelay"));
 
-        List<String> stationNumbers = Arrays.stream(props.getProperty("core.stationNumbers").split(",")).toList();
-
         return new ConnectorOptions(
                 InetAddress.getByName(props.getProperty("core.address")),
                 Integer.parseInt(props.getProperty("core.port")),
@@ -47,7 +37,7 @@ public class TstpConfigParserImpl implements TstpConfigParser {
                 Integer.parseInt(props.getProperty("tstp.port")),
                 props.getProperty("tstp.user"),
                 props.getProperty("tstp.password"),
-                stationNumbers,
+                props.getProperty("core.stationNumber"),
                 mode,
                 readDelay,
                 CORE_PROPERTIES_PATH
