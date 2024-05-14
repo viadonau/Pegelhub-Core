@@ -2,7 +2,6 @@ package com.stm.pegelhub.connector.tstp.communication.impl;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
 import com.stm.pegelhub.connector.tstp.parsing.TstpXmlParser;
-import com.stm.pegelhub.connector.tstp.parsing.impl.TstpXmlParserImpl;
 import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
 import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
@@ -21,14 +20,14 @@ import java.util.List;
 public class TstpCommunicatorImpl implements TstpCommunicator {
     private static final Logger LOG = LoggerFactory.getLogger(TstpCommunicatorImpl.class);
     private final String baseURI;
-    private final HttpClient client;
+    private final HttpClient httpClient;
     private final TstpXmlParser tstpXmlParser;
     private final String userAndPassword;
 
-    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, String userAndPassword) {
+    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, String userAndPassword, HttpClient httpClient, TstpXmlParser tstpXmlParser) {
         this.baseURI = "http://"+tstpAddress+":"+tstpPort+"/?Cmd=";
-        this.client = HttpClient.newHttpClient();
-        this.tstpXmlParser = new TstpXmlParserImpl();
+        this.httpClient = httpClient;
+        this.tstpXmlParser = tstpXmlParser;
         this.userAndPassword = userAndPassword;
     }
 
@@ -40,7 +39,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
                 .build();
 
         try {
-            String responseBody = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             return tstpXmlParser.parseXmlGetResponseToMeasurements(responseBody);
         } catch (Exception e) {
             System.err.println("Could not get a response from the TSTP-Server");
@@ -57,7 +56,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
                 .build();
 
         try {
-            String responseBody = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             return tstpXmlParser.parseXmlCatalog(responseBody);
         } catch (Exception e) {
             System.err.println("Could not get a response from the TSTP-Server");
@@ -76,7 +75,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
                 .build();
 
         try {
-            String responseBody = client.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             XmlTsResponse response = tstpXmlParser.parseXmlPutResponse(responseBody);
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
