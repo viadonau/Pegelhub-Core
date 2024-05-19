@@ -10,8 +10,6 @@ public class AdapterCDATA extends XmlAdapter<String, String> {
 
     @Override
     public String unmarshal(String arg0) {
-        String data = arg0.split("\\[")[2];
-        // -3 to remove ]] at the end
-        return data.substring(0, data.length()-3);
+        return arg0;
     }
 }

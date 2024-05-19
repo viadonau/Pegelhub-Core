@@ -32,10 +32,9 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
     }
 
     public List<Measurement> getMeasurements(String zrid, Instant readFrom, Instant readUntil, String quality) {
-        URI uri = URI.create(String.format(baseURI+"Get&ZRID=%s&Von=%s&Bis=%s&Qual=%s", zrid, readFrom.toString(), readUntil.toString(), quality));
+        URI uri = URI.create(String.format(baseURI+"Get&ZRID=XKNg1sGkbQnpWLTZezsPgA&Von=2010-08-03T13:30:00Z&Bis=2010-08-03T20:30:00Z"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
-                .header("Authorization", "Basic "+ base64Encode(userAndPassword))
                 .build();
 
         try {
@@ -49,10 +48,9 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
 
 
     public XmlQueryResponse getCatalog() {
-        URI uri = URI.create(String.format(baseURI+"Query"));
+        URI uri = URI.create(String.format(baseURI+"Query&Parameter=Wasserstand&Ort=10001373&DefArt=K'"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
-                .header("Authorization", "Basic "+base64Encode(userAndPassword))
                 .build();
 
         try {

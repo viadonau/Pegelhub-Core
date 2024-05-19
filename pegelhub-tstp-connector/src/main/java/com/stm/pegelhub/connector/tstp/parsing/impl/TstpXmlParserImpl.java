@@ -6,6 +6,8 @@ import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
 import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsDefinition;
 import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,14 +15,17 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class TstpXmlParserImpl implements TstpXmlParser {
+    private static final Logger LOG = LoggerFactory.getLogger(TstpXmlParserImpl.class);
     @Override
     public List<Measurement> parseXmlGetResponseToMeasurements(String responseBody) {
         XmlTsData responseObject = unmarshalXmlTsData(responseBody);
+        LOG.info("parsed ts data");
 
         return parseXmlTsDataToMeasurementList(responseObject);
     }
@@ -99,31 +104,83 @@ public class TstpXmlParserImpl implements TstpXmlParser {
     }
 
     private List<Measurement> parseXmlTsDataToMeasurementList(XmlTsData data) {
-        String rawMeasurements = data.getData();
-        String[] splitUpMeasurements = rawMeasurements.split("\n");
+        String rawMeasurements = data.getData().replace("\n", "");
+        byte[] decoded = Base64.getDecoder().decode(rawMeasurements);
+        List<Measurement> measurementList = new ArrayList<>();
 
-        return Arrays.stream(splitUpMeasurements).map(rawMeasurement -> {
-            String[] timestampAndMeasurement = rawMeasurement.split(" ");
+        for(int j = 0; j < decoded.length; j = j+12) {
+            byte[] dateBytes = Arrays.copyOfRange(decoded, j, j+8);
 
-            if (timestampAndMeasurement.length != 2) {
-                System.err.println("Wrong number of arguments in a raw measurement");
-                return null;
+            int year = 0;
+            int month = 0;
+            int day = 0;
+
+            int hours = 0;
+            int minutes = 0;
+            int seconds = 0;
+            for(int k = 0; k < dateBytes.length; k++){
+                byte dateByte = dateBytes[k];
+
+                //comments are referring the table 1 from the tstp documentation
+                //Byte 6
+                if(k == 1){
+                    for(int i = 3; i >= 0; i--){
+                        int bit = getBit(dateByte, i);
+                        year = (year << 1) | bit;
+                    }
+                }
+                //Byte 5
+                if(k == 2){
+                    for(int i = 7; i >= 0; i--){
+                        int bit = getBit(dateByte, i);
+                        year = (year << 1) | bit;
+                    }
+                }
+                //Byte 4
+                if(k == 3){
+                    for(int i = 3; i >= 0; i--){
+                        int bit = getBit(dateByte, i);
+                        month = (month << 1) | bit;
+                    }
+                }
+                //Byte 3
+                if(k == 4){
+                    for(int i = 3; i >= 0; i--){
+                        int bit = getBit(dateByte, i);
+                        day = (day << 1) | bit;
+                    }
+                }
+
+                //Byte 2
+                if(k == 5){
+                    hours = (hours << 8) | (dateByte & 0xFF);
+                }
+                //Byte 1
+                if(k == 6){
+                    minutes = (minutes << 8) | (dateByte & 0xFF);
+                }
+                //Byte 0
+                if(k == 7){
+                    seconds = (seconds << 8) | (dateByte & 0xFF);
+                }
             }
+            int bits = ByteBuffer.wrap(Arrays.copyOfRange(decoded, j+8, j+12)).order(java.nio.ByteOrder.BIG_ENDIAN).getInt();
+            double ieeeFloat = Float.intBitsToFloat(bits);
 
-            try {
-                LocalDateTime timestamp = parseTimestampToLocalDateTime(timestampAndMeasurement[0]);
-                Double measurementValue = Double.parseDouble(timestampAndMeasurement[1]);
+            LocalDateTime dateTime = LocalDateTime.of(year, month, day, hours, minutes, seconds);
 
-                HashMap<String, Double> valueMap = new HashMap<>();
-                valueMap.put("value", measurementValue);
+            LocalDateTime mockTimeForTesting = LocalDateTime.of(LocalDate.now().minusDays(1), dateTime.toLocalTime());
+            HashMap<String, Double> valueMap = new HashMap<>();
+            valueMap.put("value", ieeeFloat);
+            LOG.info("Parsed measurement: "+mockTimeForTesting+", "+ieeeFloat);
+            measurementList.add(new Measurement(mockTimeForTesting, valueMap, new HashMap<>()));
+        }
 
-                //add infos here if needed
-                return new Measurement(timestamp, valueMap, new HashMap<>());
-            } catch (Exception e) {
-                System.err.println("Raw measurement has a wrong format");
-                return null;
-            }
-        }).filter(Objects::nonNull).toList();
+        return measurementList;
+    }
+
+    private int getBit(byte in, int position) {
+        return (in >> position) & 1;
     }
 
     private XmlTsData unmarshalXmlTsData(String xml) {
@@ -136,9 +193,5 @@ public class TstpXmlParserImpl implements TstpXmlParser {
         } catch (JAXBException e) {
             throw new RuntimeException("There was an error unmarshalling the XML");
         }
-    }
-
-    private LocalDateTime parseTimestampToLocalDateTime(String timestamp) {
-        return LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_DATE_TIME);
     }
 }
