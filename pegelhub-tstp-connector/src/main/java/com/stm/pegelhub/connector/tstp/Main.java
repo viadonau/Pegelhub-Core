@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
-    private static final String TSTP_CONFIG_PATH = "pegelhub-tstp-connector/src/main/resources/config.properties";
-    private static final String CORE_PROPERTIES_PATH = "pegelhub-tstp-connector/properties.yaml";
+    private static final String TSTP_CONFIG_PATH = "pegelhub-tstp-connector/src/main/resources/config1.properties";
+    private static final String CORE_PROPERTIES_PATH = "pegelhub-tstp-connector/properties1.yaml";
 
     /**
      * Initiates the TSTP Connector

@@ -28,15 +28,17 @@ public class TstpReader extends TimerTask {
     }
 
     /**
-     * The connection to the FTP Server. Reads the file and tries to parse it. If successful, the parsed Measurements get
+     * The connection to the TSTP Server. Reads the file and tries to parse it. If successful, the parsed Measurements get
      * transferred to pegelhub-core
      */
     @Override
     public void run() {
         try {
             String zrid = catalogHandler.getZrid();
+            System.out.println("ZRID gotten from catalog: "+zrid);
             List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(),Instant.now(),"1");
             LOG.info("Read in measurements from tstp server");
+            LOG.info("Number of measurements: " + measurements.size());
             if (!measurements.isEmpty()) {
                 phCommunicator.sendMeasurements(measurements);
                 LOG.info("Sent measurements to core");

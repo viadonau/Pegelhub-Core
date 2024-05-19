@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-//so far same as reader
 public class TstpWriter extends TimerTask {
     private static final Logger LOG = LoggerFactory.getLogger(TstpWriter.class);
     private final TstpCommunicator tstpCommunicator;
@@ -26,7 +25,7 @@ public class TstpWriter extends TimerTask {
     }
 
     /**
-     * The connection to the FTP Server. Reads the file and tries to parse it. If successful, the parsed Measurements get
+     * The connection to the TSTP Server. Reads the file and tries to parse it. If successful, the parsed Measurements get
      * transferred to pegelhub-core
      */
     @Override
