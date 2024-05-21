@@ -74,21 +74,60 @@ public class TstpXmlParserImpl implements TstpXmlParser {
     }
 
     private XmlTsData parseMeasurementListToXmlTsData(List<Measurement> measurements) {
-        StringBuilder dataBuilder = new StringBuilder();
+        int byteArraySize = measurements.size() * 12;
+        byte[] binaryBlock = new byte[byteArraySize];
 
         for(int i = 0; i < measurements.size(); i++){
             Measurement currentMeasurement = measurements.get(i);
-            dataBuilder.append(currentMeasurement.getTimestamp().toString())
-                    .append(" ")
-                    .append(currentMeasurement.getFields().get("value"));
+            LocalDateTime timestamp = currentMeasurement.getTimestamp();
+            float measurementValue = (float) currentMeasurement.getFields().get("value").doubleValue();
 
-            if(i < measurements.size()-1){
-                dataBuilder.append("\n");
-            }
+            byte[] dateBytes = new byte[8];
+            // Byte 7
+            dateBytes[0] = (byte) 0;
+            // Byte 6
+            dateBytes[1] = (byte)((timestamp.getYear() >> 7) & 0x0F);
+            // Byte 5
+            dateBytes[2] = (byte)(timestamp.getYear() & 0xFF);
+            // Byte 4
+            dateBytes[3] = (byte)(timestamp.getMonthValue() & 0x0F);
+            // Byte 3
+            dateBytes[4] = (byte)(timestamp.getDayOfMonth() & 0x0F);
+            // Byte 2
+            dateBytes[5] = (byte)(timestamp.getHour() & 0xFF);
+            // Byte 1
+            dateBytes[6] = (byte)(timestamp.getMinute() & 0xFF);
+            // Byte 0
+            dateBytes[7] = (byte)(timestamp.getSecond() & 0xFF);
+
+            // float to int bits
+            int bits = Float.floatToIntBits(measurementValue);
+            byte[] floatBytes = ByteBuffer.allocate(4).order(java.nio.ByteOrder.BIG_ENDIAN).putInt(bits).array();
+
+            // 12 bytes ( 8 date bytes + 4 value bytes)
+            int copyToPosistion = i * 12;
+            System.arraycopy(dateBytes, 0, binaryBlock, copyToPosistion, 8);
+            System.arraycopy(floatBytes, 0, binaryBlock, copyToPosistion + 8, 4);
         }
 
+        String binaryEncoded = insertNewlines(Base64.getEncoder().encodeToString(binaryBlock));
+
         XmlTsDefinition xmlTsDef = new XmlTsDefinition("Z", "Nein", "K", "cm", "0", String.valueOf(measurements.size()));
-        return new XmlTsData(xmlTsDef, dataBuilder.toString());
+        XmlTsData xmlTsData = new XmlTsData(xmlTsDef, binaryEncoded);
+
+        var parsingTest = parseXmlTsDataToMeasurementList(xmlTsData);
+
+        return xmlTsData;
+    }
+
+    private String insertNewlines(String inputString) {
+        StringBuilder sb = new StringBuilder(inputString);
+        int i = 60;
+        while (i < sb.length()) {
+            sb.insert(i, "\n");
+            i += 60 + 1; // +1 to account for new \n
+        }
+        return sb.toString();
     }
 
     private XmlQueryResponse unmarshalXmlCatalog(String xmlCatalog) {
@@ -106,6 +145,12 @@ public class TstpXmlParserImpl implements TstpXmlParser {
     private List<Measurement> parseXmlTsDataToMeasurementList(XmlTsData data) {
         String rawMeasurements = data.getData().replace("\n", "");
         byte[] decoded = Base64.getDecoder().decode(rawMeasurements);
+        List<Measurement> measurementList = parseDataFromBinary(decoded);
+
+        return measurementList;
+    }
+
+    private List<Measurement> parseDataFromBinary(byte[] decoded) {
         List<Measurement> measurementList = new ArrayList<>();
 
         for(int j = 0; j < decoded.length; j = j+12) {
@@ -175,7 +220,6 @@ public class TstpXmlParserImpl implements TstpXmlParser {
             LOG.info("Parsed measurement: "+mockTimeForTesting+", "+ieeeFloat);
             measurementList.add(new Measurement(mockTimeForTesting, valueMap, new HashMap<>()));
         }
-
         return measurementList;
     }
 
