@@ -3,6 +3,7 @@ package com.stm.pegelhub.connector.tstp.task;
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
 import com.stm.pegelhub.connector.tstp.communication.impl.TstpCommunicatorImpl;
 import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
+import com.stm.pegelhub.connector.tstp.parsing.impl.TstpBinaryCodecImpl;
 import com.stm.pegelhub.connector.tstp.parsing.impl.TstpXmlParserImpl;
 import com.stm.pegelhub.connector.tstp.task.impl.CatalogHandlerImpl;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
@@ -25,7 +26,7 @@ public class TstpTaskFactory {
                 conOpt.tstpPort(),
                 conOpt.username()+conOpt.password(),
                 HttpClient.newHttpClient(),
-                new TstpXmlParserImpl());
+                new TstpXmlParserImpl(new TstpBinaryCodecImpl()));
 
         return switch (conOpt.connectorMode()) {
             case READ -> new TstpReader(phCommunicator,
