@@ -1,6 +1,7 @@
 package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
+import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
@@ -18,13 +19,13 @@ public class TstpReader extends TimerTask {
     private final TstpCommunicator tstpCommunicator;
     private final PegelHubCommunicator phCommunicator;
     private final Duration durationToLookBack;
-    private final CatalogHandler catalogHandler;
+    private final TstpCatalogService tstpCatalogService;
 
-    public TstpReader(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, Duration durationToLookBack, CatalogHandler catalogHandler) {
+    public TstpReader(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, Duration durationToLookBack, TstpCatalogService tstpCatalogService) {
         this.phCommunicator = phCommunicator;
         this.durationToLookBack = durationToLookBack;
         this.tstpCommunicator = tstpCommunicator;
-        this.catalogHandler = catalogHandler;
+        this.tstpCatalogService = tstpCatalogService;
     }
 
     /**
@@ -34,7 +35,7 @@ public class TstpReader extends TimerTask {
     @Override
     public void run() {
         try {
-            String zrid = catalogHandler.getZrid();
+            String zrid = tstpCatalogService.getZrid();
             System.out.println("ZRID gotten from catalog: "+zrid);
             List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(),Instant.now(),"1");
             LOG.info("Read in measurements from tstp server");

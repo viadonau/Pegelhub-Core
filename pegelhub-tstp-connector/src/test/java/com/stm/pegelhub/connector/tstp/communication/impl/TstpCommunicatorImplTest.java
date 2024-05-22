@@ -7,8 +7,6 @@ import java.util.List;
 
 import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.HttpResponseFactory;
-import org.apache.hc.core5.http.HttpStatus;
-import org.apache.hc.core5.http.HttpVersion;
 import org.apache.hc.core5.http.impl.nio.DefaultHttpResponseFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.stm.pegelhub.connector.tstp.parsing.impl.TstpXmlParserImpl;
+import com.stm.pegelhub.connector.tstp.service.impl.TstpXmlServiceImpl;
 import com.stm.pegelhub.lib.model.Measurement;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,7 +24,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TstpCommunicatorImplTest {
 	@Mock
-	private TstpXmlParserImpl parser;
+	private TstpXmlServiceImpl parser;
 	@Mock
 	private HttpClient httpClient;
 	@InjectMocks

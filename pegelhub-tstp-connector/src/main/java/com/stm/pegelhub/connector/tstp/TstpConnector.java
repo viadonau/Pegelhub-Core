@@ -1,7 +1,7 @@
 package com.stm.pegelhub.connector.tstp;
 
 import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
-import com.stm.pegelhub.connector.tstp.parsing.TstpConfigParser;
+import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 import com.stm.pegelhub.connector.tstp.task.TstpTaskFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +19,8 @@ public class TstpConnector implements AutoCloseable {
      * Configures the Connections as an TSTP Client to the TSTP Server with the given options. Configures the Delay at which the Client should
      * query for new data
      */
-    public TstpConnector(TstpConfigParser tstpConfigParser) throws IOException {
-        ConnectorOptions conOpt = tstpConfigParser.getConnectorOptions();
+    public TstpConnector(TstpConfigService tstpConfigService) throws IOException {
+        ConnectorOptions conOpt = tstpConfigService.getConnectorOptions();
 
         tstpTask = TstpTaskFactory.getTstpTask(conOpt);
         LOG.info("created tstp task");

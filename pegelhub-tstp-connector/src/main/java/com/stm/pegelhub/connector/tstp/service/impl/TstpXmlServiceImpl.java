@@ -1,11 +1,11 @@
-package com.stm.pegelhub.connector.tstp.parsing.impl;
+package com.stm.pegelhub.connector.tstp.service.impl;
 
-import com.stm.pegelhub.connector.tstp.parsing.TstpBinaryCodec;
-import com.stm.pegelhub.connector.tstp.parsing.TstpXmlParser;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsData;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsDefinition;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsResponse;
+import com.stm.pegelhub.connector.tstp.service.TstpBinaryService;
+import com.stm.pegelhub.connector.tstp.service.TstpXmlService;
+import com.stm.pegelhub.connector.tstp.service.model.XmlTsData;
+import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
+import com.stm.pegelhub.connector.tstp.service.model.XmlTsDefinition;
+import com.stm.pegelhub.connector.tstp.service.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.*;
 
-public class TstpXmlParserImpl implements TstpXmlParser {
-    private static final Logger LOG = LoggerFactory.getLogger(TstpXmlParserImpl.class);
-    private final TstpBinaryCodec binaryCodec;
+public class TstpXmlServiceImpl implements TstpXmlService {
+    private static final Logger LOG = LoggerFactory.getLogger(TstpXmlServiceImpl.class);
+    private final TstpBinaryService binaryCodec;
 
-    public TstpXmlParserImpl(TstpBinaryCodec binaryCodec) {
+    public TstpXmlServiceImpl(TstpBinaryService binaryCodec) {
         this.binaryCodec = binaryCodec;
     }
 

@@ -1,7 +1,7 @@
-package com.stm.pegelhub.connector.tstp.parsing;
+package com.stm.pegelhub.connector.tstp.service;
 
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsResponse;
+import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
+import com.stm.pegelhub.connector.tstp.service.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Handles the parsing for the TSTP-XML structure
  */
-public interface TstpXmlParser {
+public interface TstpXmlService {
     /**
      * Parses the XMLGetResponse from the TSTP-Server to a list of measurements
      *
