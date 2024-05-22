@@ -1,6 +1,7 @@
 package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
+import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
@@ -15,14 +16,14 @@ public class TstpWriter extends TimerTask {
     private final PegelHubCommunicator phCommunicator;
     private final String durationToLookBack;
     private final String stationNumber;
-    private final CatalogHandler catalogHandler;
+    private final TstpCatalogService tstpCatalogService;
 
-    public TstpWriter(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, String durationToLookBack, String stationNumber, CatalogHandler catalogHandler) {
+    public TstpWriter(PegelHubCommunicator phCommunicator, TstpCommunicator tstpCommunicator, String durationToLookBack, String stationNumber, TstpCatalogService tstpCatalogService) {
         this.phCommunicator = phCommunicator;
         this.durationToLookBack = durationToLookBack;
         this.tstpCommunicator = tstpCommunicator;
         this.stationNumber = stationNumber;
-        this.catalogHandler = catalogHandler;
+        this.tstpCatalogService = tstpCatalogService;
     }
 
     /**
@@ -48,7 +49,7 @@ public class TstpWriter extends TimerTask {
             measurements.add(new Measurement(LocalDateTime.now(), test2, new HashMap<>()));
             LOG.info("Fetched measurements from PH Core");
 
-            String zrid = catalogHandler.getZrid();
+            String zrid = tstpCatalogService.getZrid();
             if (!measurements.isEmpty()) {
                 tstpCommunicator.sendMeasurements(zrid, measurements);
                 LOG.info("Sent measurements to tstp-server");

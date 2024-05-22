@@ -1,10 +1,10 @@
-package com.stm.pegelhub.connector.tstp.parsing;
+package com.stm.pegelhub.connector.tstp.service;
 
 import java.util.List;
 
 import com.stm.pegelhub.lib.model.Measurement;
 
-public interface TstpBinaryCodec {
+public interface TstpBinaryService {
 
 	/**
 	 * Decodes binary data as specified in the tstp protocol description.

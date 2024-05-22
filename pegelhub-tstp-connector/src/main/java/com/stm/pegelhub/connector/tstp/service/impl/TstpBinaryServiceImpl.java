@@ -1,4 +1,4 @@
-package com.stm.pegelhub.connector.tstp.parsing.impl;
+package com.stm.pegelhub.connector.tstp.service.impl;
 
 import java.nio.ByteBuffer;
 import java.time.LocalDate;
@@ -11,11 +11,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.stm.pegelhub.connector.tstp.parsing.TstpBinaryCodec;
+import com.stm.pegelhub.connector.tstp.service.TstpBinaryService;
 import com.stm.pegelhub.lib.model.Measurement;
 
-public class TstpBinaryCodecImpl implements TstpBinaryCodec {
-	private static final Logger LOG = LoggerFactory.getLogger(TstpXmlParserImpl.class);
+public class TstpBinaryServiceImpl implements TstpBinaryService {
+	private static final Logger LOG = LoggerFactory.getLogger(TstpXmlServiceImpl.class);
 
 	@Override
 	public List<Measurement> decode(byte[] toDecode) {

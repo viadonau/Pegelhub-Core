@@ -1,9 +1,9 @@
 package com.stm.pegelhub.connector.tstp.communication.impl;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
-import com.stm.pegelhub.connector.tstp.parsing.TstpXmlParser;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlTsResponse;
+import com.stm.pegelhub.connector.tstp.service.TstpXmlService;
+import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
+import com.stm.pegelhub.connector.tstp.service.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,13 +21,13 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
     private static final Logger LOG = LoggerFactory.getLogger(TstpCommunicatorImpl.class);
     private final String baseURI;
     private final HttpClient httpClient;
-    private final TstpXmlParser tstpXmlParser;
+    private final TstpXmlService tstpXmlService;
     private final String userAndPassword;
 
-    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, String userAndPassword, HttpClient httpClient, TstpXmlParser tstpXmlParser) {
+    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, String userAndPassword, HttpClient httpClient, TstpXmlService tstpXmlService) {
         this.baseURI = "http://"+tstpAddress+":"+tstpPort+"/?Cmd=";
         this.httpClient = httpClient;
-        this.tstpXmlParser = tstpXmlParser;
+        this.tstpXmlService = tstpXmlService;
         this.userAndPassword = userAndPassword;
     }
 
@@ -39,7 +39,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
 
         try {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
-            return tstpXmlParser.parseXmlGetResponseToMeasurements(responseBody);
+            return tstpXmlService.parseXmlGetResponseToMeasurements(responseBody);
         } catch (Exception e) {
             System.err.println("Could not get a response from the TSTP-Server");
             return new ArrayList<>();
@@ -55,7 +55,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
 
         try {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
-            return tstpXmlParser.parseXmlCatalog(responseBody);
+            return tstpXmlService.parseXmlCatalog(responseBody);
         } catch (Exception e) {
             System.err.println("Could not get a response from the TSTP-Server");
             return null;
@@ -65,7 +65,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
     @Override
     public void sendMeasurements(String zrid, List<Measurement> measurements) {
         URI uri = URI.create(String.format(baseURI+"PUT&ZRID=%s&Qual=%s",zrid, "1"));
-        String requestBody = tstpXmlParser.parseXmlPutRequest(measurements);
+        String requestBody = tstpXmlService.parseXmlPutRequest(measurements);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
@@ -74,7 +74,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
 
         try {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
-            XmlTsResponse response = tstpXmlParser.parseXmlPutResponse(responseBody);
+            XmlTsResponse response = tstpXmlService.parseXmlPutResponse(responseBody);
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
             } else {

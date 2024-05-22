@@ -1,8 +1,8 @@
-package com.stm.pegelhub.connector.tstp.parsing.impl;
+package com.stm.pegelhub.connector.tstp.service.impl;
 
 import com.stm.pegelhub.connector.tstp.model.ConnectorMode;
 import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
-import com.stm.pegelhub.connector.tstp.parsing.TstpConfigParser;
+import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,11 +10,11 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Properties;
 
-public class TstpConfigParserImpl implements TstpConfigParser {
+public class TstpConfigServiceImpl implements TstpConfigService {
     private final String TSTP_CONFIG_PATH;
     private final String CORE_PROPERTIES_PATH;
 
-    public TstpConfigParserImpl(String tstpConfigPath, String corePropertiesPath) {
+    public TstpConfigServiceImpl(String tstpConfigPath, String corePropertiesPath) {
         this.TSTP_CONFIG_PATH = tstpConfigPath;
         this.CORE_PROPERTIES_PATH = corePropertiesPath;
     }

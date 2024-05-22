@@ -1,21 +1,21 @@
-package com.stm.pegelhub.connector.tstp.task.impl;
+package com.stm.pegelhub.connector.tstp.service.impl;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
-import com.stm.pegelhub.connector.tstp.task.CatalogHandler;
+import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
+import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
-public class CatalogHandlerImpl implements CatalogHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(CatalogHandlerImpl.class);
+public class TstpCatalogServiceImpl implements TstpCatalogService {
+    private static final Logger LOG = LoggerFactory.getLogger(TstpCatalogServiceImpl.class);
     private Instant latestRefresh;
     private XmlQueryResponse catalog;
     private final TstpCommunicator communicator;
 
-    public CatalogHandlerImpl(TstpCommunicator communicator) {
+    public TstpCatalogServiceImpl(TstpCommunicator communicator) {
         this.communicator = communicator;
         refreshCatalog();
     }

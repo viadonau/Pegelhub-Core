@@ -1,4 +1,4 @@
-package com.stm.pegelhub.connector.tstp.parsing.model;
+package com.stm.pegelhub.connector.tstp.service.model;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

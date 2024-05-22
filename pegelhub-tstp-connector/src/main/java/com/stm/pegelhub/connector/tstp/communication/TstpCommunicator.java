@@ -1,6 +1,6 @@
 package com.stm.pegelhub.connector.tstp.communication;
 
-import com.stm.pegelhub.connector.tstp.parsing.model.XmlQueryResponse;
+import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
 import com.stm.pegelhub.lib.model.Measurement;
 
 import java.time.Instant;
