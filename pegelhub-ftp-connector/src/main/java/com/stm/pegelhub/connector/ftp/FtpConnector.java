@@ -4,15 +4,16 @@ import com.stm.pegelhub.connector.ftp.fileparsing.ParserFactory;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.PegelHubCommunicatorFactory;
 import org.apache.commons.net.PrintCommandListener;
-import org.apache.commons.net.ftp.*;
+import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.MalformedURLException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.time.Duration;
-import java.util.*;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FtpConnector implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FtpConnector.class);
