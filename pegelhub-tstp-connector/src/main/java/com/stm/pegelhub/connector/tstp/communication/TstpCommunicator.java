@@ -16,17 +16,18 @@ public interface TstpCommunicator {
      * @param zrid the ZRID to identify the time series
      * @param readFrom the start point to read entries
      * @param readUntil the endpoint to stop reading entries
-     * @param quality the quality of the time series
      * @return a list of measurements returned from the TSTP-Server
      */
-    List<Measurement> getMeasurements(String zrid, Instant readFrom, Instant readUntil, String quality);
+    // TODO either both string or both instant
+    List<Measurement> getMeasurements(String zrid, Instant readFrom, String readUntil);
 
     /**
-     * Get the ZRID Catalog from the TSTP-Server - needs the proper logic ones the real tstp server is available
+     * Get the ZRID Catalog for a certain location with the DBMS Number from the TSTP-Server
      *
+     * @param dbms the DBMS Number from the location
      * @return the catalog returned from the TSTP-Server
      */
-    XmlQueryResponse getCatalog();
+    XmlQueryResponse getCatalog(int dbms);
 
     /**
      * Send a list of measurements to the TSTP-Server

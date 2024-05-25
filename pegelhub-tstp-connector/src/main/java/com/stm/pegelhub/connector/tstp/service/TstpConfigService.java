@@ -1,6 +1,6 @@
 package com.stm.pegelhub.connector.tstp.service;
 
-import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
+import com.stm.pegelhub.connector.tstp.ConnectorOptions;
 
 import java.io.IOException;
 

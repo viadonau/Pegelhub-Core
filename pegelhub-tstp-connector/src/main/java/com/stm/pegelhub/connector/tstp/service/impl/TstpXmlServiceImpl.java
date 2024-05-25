@@ -21,16 +21,16 @@ import java.util.*;
 
 public class TstpXmlServiceImpl implements TstpXmlService {
     private static final Logger LOG = LoggerFactory.getLogger(TstpXmlServiceImpl.class);
-    private final TstpBinaryService binaryCodec;
+    private final TstpBinaryService binaryService;
 
-    public TstpXmlServiceImpl(TstpBinaryService binaryCodec) {
-        this.binaryCodec = binaryCodec;
+    public TstpXmlServiceImpl(TstpBinaryService binaryService) {
+        this.binaryService = binaryService;
     }
 
     @Override
     public List<Measurement> parseXmlGetResponseToMeasurements(String responseBody) {
         XmlTsData responseObject = unmarshalXmlTsData(responseBody);
-        LOG.info("parsed ts data");
+        LOG.debug("unmarshalled get response");
 
         return parseXmlTsDataToMeasurementList(responseObject);
     }
@@ -58,7 +58,7 @@ public class TstpXmlServiceImpl implements TstpXmlService {
 
     @Override
     public String parseXmlPutRequest(List<Measurement> measurements) {
-        byte[] binaryBlock = binaryCodec.encode(measurements);
+        byte[] binaryBlock = binaryService.encode(measurements);
         String binaryEncoded = insertNewlines(Base64.getEncoder().encodeToString(binaryBlock));
 
         XmlTsDefinition xmlTsDef = new XmlTsDefinition("Z", "Nein", "K", "cm", String.valueOf(measurements.size()*12), String.valueOf(measurements.size()));
@@ -101,9 +101,8 @@ public class TstpXmlServiceImpl implements TstpXmlService {
     private List<Measurement> parseXmlTsDataToMeasurementList(XmlTsData data) {
         String rawMeasurements = data.getData().replace("\n", "");
         byte[] decoded = Base64.getDecoder().decode(rawMeasurements);
-        List<Measurement> measurementList = binaryCodec.decode(decoded);
 
-        return measurementList;
+        return binaryService.decode(decoded);
     }
 
 

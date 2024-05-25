@@ -14,14 +14,16 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
     private Instant latestRefresh;
     private XmlQueryResponse catalog;
     private final TstpCommunicator communicator;
+    private final int dbms;
 
-    public TstpCatalogServiceImpl(TstpCommunicator communicator) {
+    public TstpCatalogServiceImpl(TstpCommunicator communicator, int dbms) {
         this.communicator = communicator;
+        this.dbms = dbms;
         refreshCatalog();
     }
 
     private void refreshCatalog() {
-        catalog = communicator.getCatalog();
+        catalog = communicator.getCatalog(dbms);
         this.latestRefresh = Instant.now();
     }
 
@@ -33,10 +35,18 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
             refreshCatalog();
         }
         if(this.catalog == null){
+            LOG.info("Catalog is null - there was an error");
             return "";
         }
-        LOG.info("ZRID from catalog:" + catalog.getDef().get(0).getZrid());
         return catalog.getDef().get(0).getZrid();
+    }
+
+    @Override
+    public String getMaxFocusEnd() {
+        if (this.catalog == null) {
+           return "";
+        }
+        return catalog.getDef().get(0).getMaxFocusEnd();
     }
 
     private boolean isCatalogInSync() {
