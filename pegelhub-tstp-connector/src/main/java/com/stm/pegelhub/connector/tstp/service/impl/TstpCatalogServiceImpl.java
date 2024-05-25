@@ -30,11 +30,12 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
         LOG.info("getting ZRID");
         if (!isCatalogInSync()) {
             LOG.info("Catalog out of sync");
-            LOG.info("latest refresh: "+this.latestRefresh.toString());
             refreshCatalog();
-            LOG.info("updated latest refresh: "+this.latestRefresh.toString());
         }
-
+        if(this.catalog == null){
+            return "";
+        }
+        LOG.info("ZRID from catalog:" + catalog.getDef().get(0).getZrid());
         return catalog.getDef().get(0).getZrid();
     }
 

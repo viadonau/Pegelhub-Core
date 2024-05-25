@@ -7,6 +7,7 @@ import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
 import com.stm.pegelhub.connector.tstp.service.model.XmlTsDefinition;
 import com.stm.pegelhub.connector.tstp.service.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
+import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class TstpXmlServiceImpl implements TstpXmlService {
         String binaryEncoded = insertNewlines(Base64.getEncoder().encodeToString(binaryBlock));
 
         XmlTsDefinition xmlTsDef = new XmlTsDefinition("Z", "Nein", "K", "cm", String.valueOf(measurements.size()*12), String.valueOf(measurements.size()));
-        XmlTsData xmlTsData = new XmlTsData(xmlTsDef, binaryEncoded);
+        XmlTsData xmlTsData = new XmlTsData("1", xmlTsDef, binaryEncoded);
         return marshallXmlTsData(xmlTsData);
     }
 
@@ -72,6 +73,10 @@ public class TstpXmlServiceImpl implements TstpXmlService {
 
             Marshaller marshaller = jc.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+            marshaller.setProperty(CharacterEscapeHandler.class.getName(),
+                    (CharacterEscapeHandler) (ac, i, j, flag, writer) -> writer.write(ac, i, j));
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
+
             marshaller.marshal(tsData, sw);
 
             return sw.toString();
