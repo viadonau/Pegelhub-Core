@@ -28,17 +28,26 @@ Prerequisites to install and use the FTP-Connector are:
       currently failing, therefore skipping)
     * After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
       the `pegelhub-ftp-connector/target` folder. The .jar and `properties.yaml` have to be in the same folder.
-        * Move the new .jar file out of the `/target` folder into `pegelhub-ftp-connector`
-        * ~~If you want to move the `properties.yaml` file, remember to use the new path of it in the JVM arguments when
-          starting the FTP-Connector~~
 
 The `properties.yaml` file stores information about the received data, including the provider and the needed API-Key for
 communication between the Pegelhub-Core and the FTP-Connector.
 
-2) Build the pegelhub-ftp-connector docker image:
-    * Open the project in the correct folder like in Step #1
-    * In Terminal, execute command `docker build .\Dockerfile`
-    * _After successful build a_
+2) Build and save the pegelhub-ftp-connector docker image:
+    * Open the project in the correct folder (`../pegelhub-ftp-connector`)
+    * In Terminal, execute command `docker build -t ftp-connector .` where the tag `ftp-connector` could also be renamed
+      to another fitting name and  `.`  stands for the current path
+      * To ensure that the image was built, execute `docker images` to show a list of built images
+    * Save the docker image with `docker save ftp-connector -o ftp-connector.tar`
+
+3) If you want to run the container only locally:
+      * Load the docker image with `docker load -i ftp-connector`
+      * 
+
+4) Transfer the pegelhub-ftp-connector docker image to server via SSH using scp (alternative to docker hub + account):
+    * Open the project in the correct folder (`../pegelhub-ftp-connector`)
+    * Transfer the data onto your provided server with `scp .\ftp.connector.tar username@IPAddressOfServer:~`
+      * You may have to enter credentials (password for the given username)
+    * 
 
 ## How to use
 
@@ -48,10 +57,6 @@ data, you will need two separate instances of the FTP-Connector.
 1. Make sure you have a `config.properties` File in the correct folder: `../pegelhub-ftp-connector/src/main/resources`
 2. Define the corresponding properties to your needs:
     * For further explanation of the config properties refer to "Connector Options (Config Properties)" below.
-
-```
-
-```
 
 As an example, a valid command for a zrxp-file-reading FTP Connector could be:
 
@@ -81,8 +86,7 @@ read.delay=20s
 
 ## Connector Options (Config Properties)
 
-These arguments are passed inline (seperated by space) at the start of the FTP-Connector and have to be in the exact
-order as listed below:
+These arguments are passed at the start of the FTP-Connector and have to be in the exact order as listed below:
 
 ### core.address (formerly known as coreAddress)
 
