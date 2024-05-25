@@ -64,12 +64,11 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
 
     @Override
     public void sendMeasurements(String zrid, List<Measurement> measurements) {
-        URI uri = URI.create(String.format(baseURI+"PUT&ZRID=%s&Qual=%s",zrid, "1"));
+        URI uri = URI.create(String.format(baseURI+"PUT&ZRID=%s",zrid));
         String requestBody = tstpXmlService.parseXmlPutRequest(measurements);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-                .header("Authorization", "Basic "+base64Encode(userAndPassword))
                 .build();
 
         try {
@@ -77,15 +76,13 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
             XmlTsResponse response = tstpXmlService.parseXmlPutResponse(responseBody);
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
+                LOG.info(response.getMessage());
             } else {
-                LOG.info("There was an error sending the data: "+response.getMessage());
+                LOG.info("There was an error sending the data: "+ response.getMessage());
+                LOG.info(responseBody);
             }
         } catch (Exception e) {
-            System.err.println("Could not get a response from the TSTP-Server");
+            LOG.info("Could not get a response from the TSTP-Server");
         }
-    }
-
-    private String base64Encode(String input) {
-        return Base64.getEncoder().encodeToString(input.getBytes());
     }
 }
