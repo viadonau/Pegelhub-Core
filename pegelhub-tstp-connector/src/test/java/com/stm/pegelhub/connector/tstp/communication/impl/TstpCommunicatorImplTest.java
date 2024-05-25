@@ -39,7 +39,7 @@ class TstpCommunicatorImplTest {
 		when(httpClient.send(any(), any())).thenReturn((java.net.http.HttpResponse<Object>) response);
 		when(parser.parseXmlGetResponseToMeasurements(any())).thenReturn(List.of(testMeasurement));
 
-		List<Measurement> returned = communicator.getMeasurements("1", Instant.now(), Instant.now(), "1");
+		List<Measurement> returned = communicator.getMeasurements("1", Instant.now(), "asdf");
 		assertEquals(testMeasurement, returned.get(0));
 	}
 

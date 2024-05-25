@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class TstpWriter extends TimerTask {
@@ -39,14 +40,14 @@ public class TstpWriter extends TimerTask {
             //TODO remove testing
             List<Measurement> measurements = new ArrayList<>();
             HashMap<String, Double> test = new HashMap<>();
-            test.put("value", 234.34);
-            measurements.add(new Measurement(LocalDateTime.now().minusHours(2), test, new HashMap<>()));
+            test.put("value", 685.20001);
+            measurements.add(new Measurement(LocalDateTime.parse("2011-10-12T09:00:00Z", DateTimeFormatter.ISO_ZONED_DATE_TIME), test, new HashMap<>()));
             HashMap<String, Double> test1 = new HashMap<>();
-            test1.put("value", 235.35);
-            measurements.add(new Measurement(LocalDateTime.now().minusHours(1), test1, new HashMap<>()));
+            test1.put("value", 681.59998);
+            measurements.add(new Measurement(LocalDateTime.parse("2011-10-12T09:15:00Z", DateTimeFormatter.ISO_ZONED_DATE_TIME), test1, new HashMap<>()));
             HashMap<String, Double> test2 = new HashMap<>();
-            test2.put("value", 236.36);
-            measurements.add(new Measurement(LocalDateTime.now(), test2, new HashMap<>()));
+            test2.put("value", 682.20001);
+            measurements.add(new Measurement(LocalDateTime.parse("2011-10-12T09:30:00Z", DateTimeFormatter.ISO_ZONED_DATE_TIME), test2, new HashMap<>()));
             LOG.info("Fetched measurements from PH Core");
 
             String zrid = tstpCatalogService.getZrid();

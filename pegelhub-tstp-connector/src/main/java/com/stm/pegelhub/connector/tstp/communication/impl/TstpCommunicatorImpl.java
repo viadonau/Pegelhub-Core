@@ -13,8 +13,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 
 public class TstpCommunicatorImpl implements TstpCommunicator {
@@ -22,42 +23,48 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
     private final String baseURI;
     private final HttpClient httpClient;
     private final TstpXmlService tstpXmlService;
-    private final String userAndPassword;
 
-    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, String userAndPassword, HttpClient httpClient, TstpXmlService tstpXmlService) {
+    public TstpCommunicatorImpl(String tstpAddress, int tstpPort, HttpClient httpClient, TstpXmlService tstpXmlService) {
         this.baseURI = "http://"+tstpAddress+":"+tstpPort+"/?Cmd=";
         this.httpClient = httpClient;
         this.tstpXmlService = tstpXmlService;
-        this.userAndPassword = userAndPassword;
     }
 
-    public List<Measurement> getMeasurements(String zrid, Instant readFrom, Instant readUntil, String quality) {
-        URI uri = URI.create(String.format(baseURI+"Get&ZRID=XKNg1sGkbQnpWLTZezsPgA&Von=2010-08-03T13:30:00Z&Bis=2010-08-03T20:30:00Z"));
+    public List<Measurement> getMeasurements(String zrid, Instant readFrom, String readUntil) {
+        URI uri = URI.create(String.format(baseURI+"Get&ZRID=%s&Von=%s&Bis=%s", zrid, formatInstant(readFrom), readUntil));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
 
         try {
+            LOG.debug("Get Request:");
+            LOG.debug(uri.toString());
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            LOG.debug("Response body:");
+            LOG.debug(responseBody);
             return tstpXmlService.parseXmlGetResponseToMeasurements(responseBody);
         } catch (Exception e) {
-            System.err.println("Could not get a response from the TSTP-Server");
+            LOG.info("Could not get a response from the TSTP-Server");
             return new ArrayList<>();
         }
     }
 
 
-    public XmlQueryResponse getCatalog() {
-        URI uri = URI.create(String.format(baseURI+"Query&Parameter=Wasserstand&Ort=10001373&DefArt=K'"));
+    public XmlQueryResponse getCatalog(int dbms) {
+        URI uri = URI.create(String.format(baseURI+"Query&ORT=%d&Parameter=Wasserstand&Hauptreihe=true", dbms));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
 
         try {
+            LOG.info("catalog request:");
+            LOG.info(uri.toString());
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
+            LOG.info("response:");
+            LOG.info(responseBody);
             return tstpXmlService.parseXmlCatalog(responseBody);
         } catch (Exception e) {
-            System.err.println("Could not get a response from the TSTP-Server");
+            LOG.info("Could not get a response from the TSTP-Server");
             return null;
         }
     }
@@ -84,5 +91,10 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
         } catch (Exception e) {
             LOG.info("Could not get a response from the TSTP-Server");
         }
+    }
+
+    private String formatInstant(Instant toFormat) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss'Z'").withZone(ZoneOffset.UTC);
+        return dtf.format(toFormat);
     }
 }

@@ -10,4 +10,11 @@ public interface TstpCatalogService {
      * @return the requested ZRID
      */
     String getZrid();
+
+    /**
+     * Get the MAXFOCUS-End from the catalog
+     *
+     * @return the MAXFOCUS-End date
+     */
+    String getMaxFocusEnd();
 }

@@ -1,7 +1,6 @@
 package com.stm.pegelhub.connector.tstp.service.impl;
 
-import com.stm.pegelhub.connector.tstp.model.ConnectorMode;
-import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
+import com.stm.pegelhub.connector.tstp.ConnectorOptions;
 import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 
 import java.io.FileInputStream;
@@ -23,11 +22,6 @@ public class TstpConfigServiceImpl implements TstpConfigService {
     public ConnectorOptions getConnectorOptions() throws IOException {
         Properties props = getProperties();
 
-        ConnectorMode mode = ConnectorMode.valueOfName(props.getProperty("connector.mode"));
-        if (mode == null) {
-            mode = ConnectorMode.READ;
-        }
-
         Duration readDelay = parseReadDelay(props.getProperty("connector.readDelay"));
 
         return new ConnectorOptions(
@@ -35,10 +29,6 @@ public class TstpConfigServiceImpl implements TstpConfigService {
                 Integer.parseInt(props.getProperty("core.port")),
                 props.getProperty("tstp.address"),
                 Integer.parseInt(props.getProperty("tstp.port")),
-                props.getProperty("tstp.user"),
-                props.getProperty("tstp.password"),
-                props.getProperty("core.stationNumber"),
-                mode,
                 readDelay,
                 CORE_PROPERTIES_PATH
         );

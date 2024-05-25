@@ -36,13 +36,17 @@ public class TstpReader extends TimerTask {
     public void run() {
         try {
             String zrid = tstpCatalogService.getZrid();
-            System.out.println("ZRID gotten from catalog: "+zrid);
-            List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(),Instant.now(),"1");
+            String maxFocusEnd = tstpCatalogService.getMaxFocusEnd();
+            LOG.info("ZRID gotten from catalog: "+zrid);
+
+            List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(), maxFocusEnd);
             LOG.info("Read in measurements from tstp server");
-            LOG.info("Number of measurements: " + measurements.size());
+
             if (!measurements.isEmpty()) {
                 phCommunicator.sendMeasurements(measurements);
                 LOG.info("Sent measurements to core");
+            } else {
+                LOG.info("Measurement List is empty - nothing was sent to the core");
             }
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);

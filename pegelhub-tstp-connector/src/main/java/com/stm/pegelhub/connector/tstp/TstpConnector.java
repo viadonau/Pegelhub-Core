@@ -1,6 +1,5 @@
 package com.stm.pegelhub.connector.tstp;
 
-import com.stm.pegelhub.connector.tstp.model.ConnectorOptions;
 import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 import com.stm.pegelhub.connector.tstp.task.TstpTaskFactory;
 import org.slf4j.Logger;
