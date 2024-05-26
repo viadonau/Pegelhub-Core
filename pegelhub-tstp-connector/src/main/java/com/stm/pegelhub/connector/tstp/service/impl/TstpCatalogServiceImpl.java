@@ -42,11 +42,11 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
     }
 
     @Override
-    public String getMaxFocusEnd() {
+    public Instant getMaxFocusEnd() {
         if (this.catalog == null) {
-           return "";
+           return null;
         }
-        return catalog.getDef().get(0).getMaxFocusEnd();
+        return Instant.parse(catalog.getDef().get(0).getMaxFocusEnd());
     }
 
     private boolean isCatalogInSync() {

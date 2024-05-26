@@ -45,7 +45,7 @@ public class TstpTaskFactory {
 
             return new TstpWriter(phCommunicator,
                     tstpCommunicator,
-                    conOpt.readDelay().toSeconds() + "s",
+                    conOpt.readDelay().toSeconds()+"s",
                     taker.stationNumber(),
                     new TstpCatalogServiceImpl(tstpCommunicator, stationId));
         }

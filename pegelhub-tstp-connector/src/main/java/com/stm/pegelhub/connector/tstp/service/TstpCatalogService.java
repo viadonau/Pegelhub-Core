@@ -1,5 +1,7 @@
 package com.stm.pegelhub.connector.tstp.service;
 
+import java.time.Instant;
+
 /**
  * Handles the logic for refreshing the catalog and always receiving the up to date ZRIDs
  */
@@ -16,5 +18,5 @@ public interface TstpCatalogService {
      *
      * @return the MAXFOCUS-End date
      */
-    String getMaxFocusEnd();
+    Instant getMaxFocusEnd();
 }

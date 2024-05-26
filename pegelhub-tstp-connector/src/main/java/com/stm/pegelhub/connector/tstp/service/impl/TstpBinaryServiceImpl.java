@@ -19,6 +19,7 @@ public class TstpBinaryServiceImpl implements TstpBinaryService {
     public List<Measurement> decode(byte[] toDecode) {
         List<Measurement> measurementList = new ArrayList<>();
 
+        // can probably be done with one loop, but I don't have enough time to change it (something with modulo should work)
         for (int j = 0; j < toDecode.length; j = j + 12) {
             byte[] dateBytes = Arrays.copyOfRange(toDecode, j, j + 8);
 
@@ -80,12 +81,11 @@ public class TstpBinaryServiceImpl implements TstpBinaryService {
             double roundedFloat = BigDecimal.valueOf(ieeeFloat).setScale(2, RoundingMode.HALF_UP).doubleValue();
             LocalDateTime dateTime = LocalDateTime.of(year, month, day, hours, minutes, seconds);
 
-            LocalDateTime mockTimeForTesting = LocalDateTime.of(LocalDate.now().minusDays(1), dateTime.toLocalTime());
             HashMap<String, Double> valueMap = new HashMap<>();
             valueMap.put("value", roundedFloat);
 
             // TODO infos necessary??
-            measurementList.add(new Measurement(mockTimeForTesting, valueMap, new HashMap<>()));
+            measurementList.add(new Measurement(dateTime, valueMap, new HashMap<>()));
         }
         return measurementList;
     }

@@ -18,8 +18,7 @@ public interface TstpCommunicator {
      * @param readUntil the endpoint to stop reading entries
      * @return a list of measurements returned from the TSTP-Server
      */
-    // TODO either both string or both instant
-    List<Measurement> getMeasurements(String zrid, Instant readFrom, String readUntil);
+    List<Measurement> getMeasurements(String zrid, Instant readFrom, Instant readUntil);
 
     /**
      * Get the ZRID Catalog for a certain location with the DBMS Number from the TSTP-Server
