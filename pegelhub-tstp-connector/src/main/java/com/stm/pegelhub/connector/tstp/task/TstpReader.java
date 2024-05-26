@@ -2,6 +2,7 @@ package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
 import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
+import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;
@@ -36,28 +37,25 @@ public class TstpReader extends TimerTask {
     public void run() {
         try {
             String zrid = tstpCatalogService.getZrid();
-            String maxFocusEnd = tstpCatalogService.getMaxFocusEnd();
-            LOG.info("ZRID gotten from catalog: "+zrid);
+            Instant lookBackTimestamp = getLookBackTimestamp();
+            Instant maxFocusEnd = tstpCatalogService.getMaxFocusEnd();
+            LOG.info("ZRID gotten from catalog: " + zrid);
 
-            List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid,getLookBackTimestamp(), maxFocusEnd);
-            LOG.info("Read in measurements from tstp server");
-
-            if (!measurements.isEmpty()) {
-                phCommunicator.sendMeasurements(measurements);
-                LOG.info("Sent measurements to core");
+            if (lookBackTimestamp.isBefore(maxFocusEnd)) {
+                List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid, getLookBackTimestamp(), maxFocusEnd);
+                LOG.info("Read in measurements from tstp server");
+                if (!measurements.isEmpty()) {
+                    phCommunicator.sendMeasurements(measurements);
+                    LOG.info("Sent measurements to core");
+                } else {
+                    LOG.info("Measurement List is empty - nothing was sent to the core");
+                }
             } else {
-                LOG.info("Measurement List is empty - nothing was sent to the core");
+                LOG.info("MAXFOCUS-End (where the time series ends) is before the timestamp to start reading from");
             }
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
         }
-    }
-
-    private Instant getLookBackTimestamp() {
-        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.systemDefault());
-        return currentTime.minus(durationToLookBack)
-                .minus(Duration.of(currentTime.getOffset().getTotalSeconds(), ChronoUnit.SECONDS))
-                .toInstant();
     }
 
     @Override
@@ -70,4 +68,10 @@ public class TstpReader extends TimerTask {
         }
     }
 
+    private Instant getLookBackTimestamp() {
+        ZonedDateTime currentTime = ZonedDateTime.now(ZoneId.systemDefault());
+        return currentTime.minus(durationToLookBack)
+                .minus(Duration.of(currentTime.getOffset().getTotalSeconds(), ChronoUnit.SECONDS))
+                .toInstant();
+    }
 }

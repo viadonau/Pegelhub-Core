@@ -61,7 +61,14 @@ public class TstpXmlServiceImpl implements TstpXmlService {
         byte[] binaryBlock = binaryService.encode(measurements);
         String binaryEncoded = insertNewlines(Base64.getEncoder().encodeToString(binaryBlock));
 
-        XmlTsDefinition xmlTsDef = new XmlTsDefinition("Z", "Nein", "K", "cm", String.valueOf(measurements.size()*12), String.valueOf(measurements.size()));
+        XmlTsDefinition xmlTsDef = new XmlTsDefinition(
+                "Z",
+                "Nein",
+                "K",
+                "cm",
+                String.valueOf(measurements.size()*12),
+                String.valueOf(measurements.size())
+        );
         XmlTsData xmlTsData = new XmlTsData("1", xmlTsDef, binaryEncoded);
         return marshallXmlTsData(xmlTsData);
     }
@@ -78,7 +85,6 @@ public class TstpXmlServiceImpl implements TstpXmlService {
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "ISO-8859-1");
 
             marshaller.marshal(tsData, sw);
-
             return sw.toString();
         } catch (JAXBException e) {
             throw new RuntimeException("There was an error marshalling the XmlTsData");

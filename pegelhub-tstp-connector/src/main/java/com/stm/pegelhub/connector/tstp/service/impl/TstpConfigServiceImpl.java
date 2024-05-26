@@ -21,8 +21,7 @@ public class TstpConfigServiceImpl implements TstpConfigService {
     @Override
     public ConnectorOptions getConnectorOptions() throws IOException {
         Properties props = getProperties();
-
-        Duration readDelay = parseReadDelay(props.getProperty("connector.readDelay"));
+        Duration readDelay = parseDurationString(props.getProperty("connector.readDelay"));
 
         return new ConnectorOptions(
                 InetAddress.getByName(props.getProperty("core.address")),
@@ -32,6 +31,29 @@ public class TstpConfigServiceImpl implements TstpConfigService {
                 readDelay,
                 CORE_PROPERTIES_PATH
         );
+    }
+
+
+    /**
+     * Parses the string to a Duration Object if the format is correct
+     *
+     * @param toParse the string to parse
+     * @return the parsed Duration
+     */
+    private Duration parseDurationString(String toParse) {
+        if (toParse.isEmpty()) {
+            return Duration.ofHours(2);
+        }
+
+        String delayDuration = toParse.substring(0, toParse.length() - 1);
+        char unit = toParse.charAt(toParse.length() - 1);
+
+        return switch (unit) {
+            case 'h', 'H' -> Duration.ofHours(Long.parseLong(delayDuration));
+            case 'm', 'M' -> Duration.ofMinutes(Long.parseLong(delayDuration));
+            case 's', 'S' -> Duration.ofSeconds(Long.parseLong(delayDuration));
+            default -> throw new IllegalArgumentException(String.format("Unknown unit type for time: %c", unit));
+        };
     }
 
     /**
@@ -45,27 +67,4 @@ public class TstpConfigServiceImpl implements TstpConfigService {
         props.load(new FileInputStream(TSTP_CONFIG_PATH));
         return props;
     }
-
-    /**
-     * Parses the string to a Duration Object if the format is correct
-     *
-     * @param delayToParse the string to parse
-     * @return the parsed Duration
-     */
-    private Duration parseReadDelay(String delayToParse) {
-        if (delayToParse.isEmpty()) {
-            return Duration.ofHours(2);
-        }
-
-        String delayDuration = delayToParse.substring(0, delayToParse.length() - 1);
-        char unit = delayToParse.charAt(delayToParse.length() - 1);
-
-        return switch (unit) {
-            case 'h', 'H' -> Duration.ofHours(Long.parseLong(delayDuration));
-            case 'm', 'M' -> Duration.ofMinutes(Long.parseLong(delayDuration));
-            case 's', 'S' -> Duration.ofSeconds(Long.parseLong(delayDuration));
-            default -> throw new IllegalArgumentException(String.format("Unknown unit type for time: %c", unit));
-        };
-    }
-
 }

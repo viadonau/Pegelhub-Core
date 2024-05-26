@@ -30,8 +30,12 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
         this.tstpXmlService = tstpXmlService;
     }
 
-    public List<Measurement> getMeasurements(String zrid, Instant readFrom, String readUntil) {
-        URI uri = URI.create(String.format(baseURI+"Get&ZRID=%s&Von=%s&Bis=%s", zrid, formatInstant(readFrom), readUntil));
+    public List<Measurement> getMeasurements(String zrid, Instant readFrom, Instant readUntil) {
+        URI uri = URI.create(String.format(baseURI+"Get&ZRID=%s&Von=%s&Bis=%s",
+                zrid,
+                formatInstant(readFrom),
+                formatInstant(readUntil)));
+
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
@@ -57,11 +61,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
                 .build();
 
         try {
-            LOG.info("catalog request:");
-            LOG.info(uri.toString());
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
-            LOG.info("response:");
-            LOG.info(responseBody);
             return tstpXmlService.parseXmlCatalog(responseBody);
         } catch (Exception e) {
             LOG.info("Could not get a response from the TSTP-Server");
@@ -81,11 +81,11 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
         try {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             XmlTsResponse response = tstpXmlService.parseXmlPutResponse(responseBody);
+
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
-                LOG.info(response.getMessage());
             } else {
-                LOG.info("There was an error sending the data: "+ response.getMessage());
+                LOG.info("There was an error sending the data - response:");
                 LOG.info(responseBody);
             }
         } catch (Exception e) {

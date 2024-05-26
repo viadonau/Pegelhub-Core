@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -20,7 +21,6 @@ public class TstpConnector implements AutoCloseable {
      */
     public TstpConnector(TstpConfigService tstpConfigService) throws IOException {
         ConnectorOptions conOpt = tstpConfigService.getConnectorOptions();
-
         tstpTask = TstpTaskFactory.getTstpTask(conOpt);
         LOG.info("created tstp task");
 
