@@ -23,7 +23,7 @@ Troubleshooting
 
 ## Setup
 
-### 1) Build the pegelhub-ftp-connector project:
+### Build the pegelhub-ftp-connector project:
 
 These steps are recommended to ensure that the project has the correct initial state.
 
@@ -34,7 +34,7 @@ These steps are recommended to ensure that the project has the correct initial s
 * After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
   the `pegelhub-ftp-connector/target` folder, besides the already existing `original-pegelhub-ftp-connector-2023.12.jar`
 
-### 2) Build and save the pegelhub-ftp-connector docker image:
+### Build and save the pegelhub-ftp-connector docker image:
 
 * Open the project in the correct folder (`../pegelhub-ftp-connector`)
 * In Terminal, execute command `docker build -t ftp-connector .` where the tag `ftp-connector` could also be renamed
@@ -42,7 +42,7 @@ These steps are recommended to ensure that the project has the correct initial s
 
 To ensure that the image was built, execute `docker images` to show a list of built images
 
-### 3) If you want to run the container locally:
+### If you want to run the container locally:
 
 * Open the project in the correct folder (`../pegelhub-ftp-connector`)
 * In Terminal, load the docker image with `docker load -i ftp-connector`
@@ -52,26 +52,36 @@ To ensure that the image was built, execute `docker images` to show a list of bu
       API-Key for communication between the Pegelhub-Core and the FTP-Connector
     * If you want the files in another directory, be sure to provide the correct path
 * In `properties.yaml` File change the following:
-    * apiToken --> "generatedApiToken"(for generating a new Token, please refer to the Postman-Collection Documentation)
+    * apiToken --> "generatedApiToken" (for generating a new Token, please refer to the Postman-Collection
+      Documentation)
     * lastTokenRefresh --> make adjustments to the date, hour and minute mark
 * Run the container with `docker run -v .\src\main\resources\:/app/files pegelhub-ftp-connector`
 
-### 4) If you want to run the container on a server (Ubuntu):
+### If you want to run the container on a server (Ubuntu):
 
-* Make sure that you server meets the requirements of the Prerequisites
+* Make sure that your server meets the requirements of the Prerequisites
 * On your local machine, open the project in the correct folder (`../pegelhub-ftp-connector`)
 * Save the docker image with `docker save ftp-connector -o ftp-connector.tar`
 * Transfer the data onto your provided server with `scp .\ftp.connector.tar serverUsername@IPAddressOfServer:~`
     * You may need to enter credentials (password for the given username)
-* Load the docker image with `docker load -i ftp-connector.tar`
-* Run the container with `docker run -d -v ./ftp-connector.tar:/app/files ftp-connector`
+* On your server, load the docker image with `docker load -i ftp-connector.tar`
+* On your server, run the container with `docker run -d -v ./ftp-connector.tar:/app/files ftp-connector`
+    * -d allows you to run the container as a background-task so that you can still use or close the terminal without
+      interrupting the container
+
+To ensure that the container is running, execute `docker ps` to show a list of available docker containers.
+To stop a running container, execute `docker stop yourContainerID`.
+To remove a container, execute `docker rm yourContainerID`
+
+For further operations with docker refer to the [official documentation](https://docs.docker.com/reference/). 
 
 ## How to use
 
 The FTP-Connector is capable of parsing .asc and .zrxp data. However, if you are planning on receiving both types of
 data, you will need two separate instances of the FTP-Connector.
 
-1. Make sure you have a `config.properties` File in the correct folder: `../pegelhub-ftp-connector/src/main/resources`
+1. Make sure you have a `config.properties` and the `properties.yaml` File in the correct
+   folder: `../pegelhub-ftp-connector/src/main/resources`
 2. Define the corresponding properties to your needs:
     * For further explanation of the config properties refer to "Connector Options (Config Properties)" below.
 
