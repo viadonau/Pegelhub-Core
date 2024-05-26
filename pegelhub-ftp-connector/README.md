@@ -13,41 +13,58 @@ Prerequisites to install and use the FTP-Connector are:
 
 * Apache Maven installation ([Latest Maven Release](https://maven.apache.org/download.cgi)) (current working version:
   Maven 3 - V 3.9.5)
-* OpenJDK 17 installation ([e.g. OpenJDK17](https://www.oracle.com/java/technologies/downloads/)) (current working
-  version: 17.0.11)
+* OpenJDK 17 or higher installation ([e.g. OpenJDK17](https://www.oracle.com/java/technologies/downloads/)) (current
+  working version: 17.0.11)
 * Internet access (communication with server)
-* Docker ([e.g. Docker Desktop](https://www.docker.com/products/docker-desktop/)) (current working version: 4.30.0)
-    * be sure to enable all needed BIOS settings for Docker
+* Docker ([e.g. Docker Desktop](https://docs.docker.com/get-docker/)) (current working version: 4.30.0)
+
+You might need special (admin) permissions for executing the tasks below. For further details refer to Possible errors /
+Troubleshooting
 
 ## Setup
 
-1) Build the pegelhub-ftp-connector project:
-    * In your Terminal (CMD / Powershell) navigate to the project `../pegelhub-ftp-connector`
-        * *OR* open the project with an IDE (IntelliJ IDEA as IDE recommended) inside of `../pegelhub-ftp-connector`
-    * In your Terminal, execute command `mvn clean package -DskipTests` to build the jar project properly (Tests are
-      currently failing, therefore skipping)
-    * After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
-      the `pegelhub-ftp-connector/target` folder. The .jar and `properties.yaml` have to be in the same folder.
+### 1) Build the pegelhub-ftp-connector project:
 
-The `properties.yaml` file stores information about the received data, including the provider and the needed API-Key for
-communication between the Pegelhub-Core and the FTP-Connector.
+These steps are recommended to ensure that the project has the correct initial state.
 
-2) Build and save the pegelhub-ftp-connector docker image:
-    * Open the project in the correct folder (`../pegelhub-ftp-connector`)
-    * In Terminal, execute command `docker build -t ftp-connector .` where the tag `ftp-connector` could also be renamed
-      to another fitting name and  `.`  stands for the current path
-      * To ensure that the image was built, execute `docker images` to show a list of built images
-    * Save the docker image with `docker save ftp-connector -o ftp-connector.tar`
+* In your Terminal (CMD / Powershell) navigate to the project `../pegelhub-ftp-connector`
+    * *OR* open the project with an IDE (IntelliJ IDEA as IDE recommended) inside of `../pegelhub-ftp-connector`
+* In your Terminal, execute command `mvn clean package -DskipTests` to build the jar project properly (Tests are
+  currently failing, therefore skipping)
+* After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
+  the `pegelhub-ftp-connector/target` folder, besides the already existing `original-pegelhub-ftp-connector-2023.12.jar`
 
-3) If you want to run the container only locally:
-      * Load the docker image with `docker load -i ftp-connector`
-      * 
+### 2) Build and save the pegelhub-ftp-connector docker image:
 
-4) Transfer the pegelhub-ftp-connector docker image to server via SSH using scp (alternative to docker hub + account):
-    * Open the project in the correct folder (`../pegelhub-ftp-connector`)
-    * Transfer the data onto your provided server with `scp .\ftp.connector.tar username@IPAddressOfServer:~`
-      * You may have to enter credentials (password for the given username)
-    * 
+* Open the project in the correct folder (`../pegelhub-ftp-connector`)
+* In Terminal, execute command `docker build -t ftp-connector .` where the tag `ftp-connector` could also be renamed
+  to another fitting name and  `.`  stands for the current path
+
+To ensure that the image was built, execute `docker images` to show a list of built images
+
+### 3) If you want to run the container locally:
+
+* Open the project in the correct folder (`../pegelhub-ftp-connector`)
+* In Terminal, load the docker image with `docker load -i ftp-connector`
+* Be sure that the `properties.yaml` and `config.properties` Files are in the same folder. In the following example
+  they are both located under `./src/main/resources`
+    * The `properties.yaml` file stores information about the received data, including the provider and the needed
+      API-Key for communication between the Pegelhub-Core and the FTP-Connector
+    * If you want the files in another directory, be sure to provide the correct path
+* In `properties.yaml` File change the following:
+    * apiToken --> "generatedApiToken"(for generating a new Token, please refer to the Postman-Collection Documentation)
+    * lastTokenRefresh --> make adjustments to the date, hour and minute mark
+* Run the container with `docker run -v .\src\main\resources\:/app/files pegelhub-ftp-connector`
+
+### 4) If you want to run the container on a server (Ubuntu):
+
+* Make sure that you server meets the requirements of the Prerequisites
+* On your local machine, open the project in the correct folder (`../pegelhub-ftp-connector`)
+* Save the docker image with `docker save ftp-connector -o ftp-connector.tar`
+* Transfer the data onto your provided server with `scp .\ftp.connector.tar serverUsername@IPAddressOfServer:~`
+    * You may need to enter credentials (password for the given username)
+* Load the docker image with `docker load -i ftp-connector.tar`
+* Run the container with `docker run -d -v ./ftp-connector.tar:/app/files ftp-connector`
 
 ## How to use
 
@@ -58,7 +75,7 @@ data, you will need two separate instances of the FTP-Connector.
 2. Define the corresponding properties to your needs:
     * For further explanation of the config properties refer to "Connector Options (Config Properties)" below.
 
-As an example, a valid command for a zrxp-file-reading FTP Connector could be:
+As an example, valid properties for a zrxp-file-reading FTP Connector could be:
 
 * The coreAddress is 127.0.0.1
 * The Port is 8081
@@ -129,9 +146,14 @@ These arguments are passed at the start of the FTP-Connector and have to be in t
 
 ### Wrong JDK
 
-Even if you have downloaded and installed the correct openJDK version it still could happen, that the project
-remains on a different version.
+In case you do the tasks with an IDE such as IntelliJ IDEA: Even if you have downloaded and installed the correct
+openJDK version it still could happen, that the project remains on a different version.
 
-In IntelliJ IDEA, make sure, that in the Project Settings (*accessible via Project
-Structure == Ctrl + Alt + Shift + S*) you have selected the correct JDK. Versions especially lower or other than the
-requested one (Prerequisites) could notably lead to an Error. Also make sure to set the Language Level to "SDK default".
+In IntelliJ IDEA, make sure, that in the Project Settings (*accessible via Project Structure == Ctrl + Alt + Shift + S*)
+you have selected the correct JDK. Versions especially lower than the requested one (Prerequisites) could lead
+to an Error. Also make sure to set the Language Level to "SDK default".
+
+### Wrong permissions/privileges
+
+For executing the tasks you might need admin permissions. Depending on how you access the project, you might have to run
+the programs (Terminal, IntelliJ, Docker Desktop) as admin. 
