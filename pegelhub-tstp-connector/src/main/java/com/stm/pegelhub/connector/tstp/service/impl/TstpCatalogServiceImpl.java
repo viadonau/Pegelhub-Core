@@ -22,11 +22,6 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
         refreshCatalog();
     }
 
-    private void refreshCatalog() {
-        catalog = communicator.getCatalog(dbms);
-        this.latestRefresh = Instant.now();
-    }
-
     @Override
     public String getZrid() {
         LOG.info("getting ZRID");
@@ -49,7 +44,12 @@ public class TstpCatalogServiceImpl implements TstpCatalogService {
         return Instant.parse(catalog.getDef().get(0).getMaxFocusEnd());
     }
 
+    private void refreshCatalog() {
+        catalog = communicator.getCatalog(dbms);
+        this.latestRefresh = Instant.now();
+    }
+
     private boolean isCatalogInSync() {
-        return latestRefresh.isAfter(Instant.now().minus(5, ChronoUnit.SECONDS));
+        return latestRefresh.isAfter(Instant.now().minus(24, ChronoUnit.HOURS));
     }
 }

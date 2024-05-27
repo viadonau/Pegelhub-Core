@@ -57,7 +57,7 @@ public class TstpBinaryServiceImpl implements TstpBinaryService {
                 }
                 //Byte 3
                 if (k == 4) {
-                    for (int i = 3; i >= 0; i--) {
+                    for (int i = 4; i >= 0; i--) {
                         int bit = getBit(dateByte, i);
                         day = (day << 1) | bit;
                     }

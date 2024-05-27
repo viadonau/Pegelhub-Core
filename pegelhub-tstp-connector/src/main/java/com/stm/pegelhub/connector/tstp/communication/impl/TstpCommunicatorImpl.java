@@ -41,8 +41,8 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
                 .build();
 
         try {
-            LOG.debug("Get Request:");
-            LOG.debug(uri.toString());
+            LOG.info("Get Request:");
+            LOG.info(uri.toString());
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             LOG.debug("Response body:");
             LOG.debug(responseBody);
@@ -82,11 +82,11 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             XmlTsResponse response = tstpXmlService.parseXmlPutResponse(responseBody);
 
+            LOG.info(responseBody);
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
             } else {
-                LOG.info("There was an error sending the data - response:");
-                LOG.info(responseBody);
+                LOG.info("There was an error sending the data");
             }
         } catch (Exception e) {
             LOG.info("Could not get a response from the TSTP-Server");
