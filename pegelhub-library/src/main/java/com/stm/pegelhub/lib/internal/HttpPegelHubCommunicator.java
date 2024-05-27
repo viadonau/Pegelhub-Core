@@ -207,9 +207,11 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
 
                 for(Measurement m : meass)
                 {
-                    String timeStampWithOffset = m.getInfos().get("TimestampWithOffset");
-                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(timeStampWithOffset);
-                    m.setTimestamp(convertedTime(m.getTimestamp(), offsetDateTime.getOffset()));
+                    if(m.getTimestamp() == null) {
+                        String timeStampWithOffset = m.getInfos().get("TimestampWithOffset");
+                        OffsetDateTime offsetDateTime = OffsetDateTime.parse(timeStampWithOffset);
+                        m.setTimestamp(convertedTime(m.getTimestamp(), offsetDateTime.getOffset()));
+                    }
                 }
 
                 return gson.fromJson(json, listType);
@@ -311,10 +313,12 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
 
             for(Measurement m : meass)
             {
-                String timeStampWithOffset = m.getInfos().get("TimestampWithOffset");
-                OffsetDateTime offsetDateTime = OffsetDateTime.parse(timeStampWithOffset);
-                        m.setTimestamp(convertedTime(m.getTimestamp(),offsetDateTime.getOffset()));
-                        Thread.sleep(500);
+                if(m.getTimestamp() == null) {
+                    String timeStampWithOffset = m.getInfos().get("TimestampWithOffset");
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(timeStampWithOffset);
+                    m.setTimestamp(convertedTime(m.getTimestamp(),offsetDateTime.getOffset()));
+                    Thread.sleep(500);
+                }
             }
 
             final URI uri = baseUrl.toURI().resolve(routeWithApiKey(measurementRoute));
