@@ -3,18 +3,20 @@ package com.stm.pegelhub.connector.tstp.service.impl;
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
 import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
 import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 
+@NoArgsConstructor
 public class TstpCatalogServiceImpl implements TstpCatalogService {
     private static final Logger LOG = LoggerFactory.getLogger(TstpCatalogServiceImpl.class);
     private Instant latestRefresh;
     private XmlQueryResponse catalog;
-    private final TstpCommunicator communicator;
-    private final int dbms;
+    private TstpCommunicator communicator;
+    private int dbms;
 
     public TstpCatalogServiceImpl(TstpCommunicator communicator, int dbms) {
         this.communicator = communicator;

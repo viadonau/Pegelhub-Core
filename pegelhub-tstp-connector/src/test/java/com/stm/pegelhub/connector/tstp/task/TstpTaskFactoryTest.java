@@ -1,7 +1,10 @@
 package com.stm.pegelhub.connector.tstp.task;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.junit.jupiter.MockitoExtension;
+
+@ExtendWith(MockitoExtension.class)
 class TstpTaskFactoryTest {
 
 }

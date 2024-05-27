@@ -5,7 +5,6 @@ import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.time.Duration;
 import java.util.Properties;
 
@@ -24,7 +23,7 @@ public class TstpConfigServiceImpl implements TstpConfigService {
         Duration readDelay = parseDurationString(props.getProperty("connector.readDelay"));
 
         return new ConnectorOptions(
-                InetAddress.getByName(props.getProperty("core.address")),
+                props.getProperty("core.address"),
                 Integer.parseInt(props.getProperty("core.port")),
                 props.getProperty("tstp.address"),
                 Integer.parseInt(props.getProperty("tstp.port")),
@@ -33,14 +32,8 @@ public class TstpConfigServiceImpl implements TstpConfigService {
         );
     }
 
-
-    /**
-     * Parses the string to a Duration Object if the format is correct
-     *
-     * @param toParse the string to parse
-     * @return the parsed Duration
-     */
-    private Duration parseDurationString(String toParse) {
+    @Override
+    public Duration parseDurationString(String toParse) {
         if (toParse.isEmpty()) {
             return Duration.ofHours(2);
         }
@@ -56,12 +49,6 @@ public class TstpConfigServiceImpl implements TstpConfigService {
         };
     }
 
-    /**
-     * Returns all stored properties from provided property file.
-     *
-     * @return Properties.
-     * @throws IOException If file does not exist.
-     */
     private Properties getProperties() throws IOException {
         Properties props = new Properties();
         props.load(new FileInputStream(TSTP_CONFIG_PATH));
