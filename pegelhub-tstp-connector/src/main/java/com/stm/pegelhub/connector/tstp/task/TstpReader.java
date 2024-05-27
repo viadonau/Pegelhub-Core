@@ -2,7 +2,6 @@ package com.stm.pegelhub.connector.tstp.task;
 
 import com.stm.pegelhub.connector.tstp.communication.TstpCommunicator;
 import com.stm.pegelhub.connector.tstp.service.TstpCatalogService;
-import com.stm.pegelhub.connector.tstp.service.TstpConfigService;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.slf4j.Logger;

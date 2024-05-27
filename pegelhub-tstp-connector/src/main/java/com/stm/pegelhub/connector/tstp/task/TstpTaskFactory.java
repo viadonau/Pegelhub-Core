@@ -22,7 +22,7 @@ public class TstpTaskFactory {
     public static TimerTask getTstpTask(ConnectorOptions conOpt) throws MalformedURLException {
         PegelHubCommunicator phCommunicator = PegelHubCommunicatorFactory.create(new URL(
                 String.format("http://%s:%s/",
-                        conOpt.coreAddress().getHostAddress(),
+                        conOpt.coreAddress(),
                         conOpt.corePort())), conOpt.propertiesFile());
         ApplicationProperties properties = ApplicationPropertiesFactory.create(conOpt.propertiesFile());
         TstpCommunicator tstpCommunicator = new TstpCommunicatorImpl(

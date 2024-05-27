@@ -5,6 +5,7 @@ import com.stm.pegelhub.connector.tstp.service.TstpXmlService;
 import com.stm.pegelhub.connector.tstp.service.model.XmlQueryResponse;
 import com.stm.pegelhub.connector.tstp.service.model.XmlTsResponse;
 import com.stm.pegelhub.lib.model.Measurement;
+import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +19,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@NoArgsConstructor
 public class TstpCommunicatorImpl implements TstpCommunicator {
     private static final Logger LOG = LoggerFactory.getLogger(TstpCommunicatorImpl.class);
-    private final String baseURI;
-    private final HttpClient httpClient;
-    private final TstpXmlService tstpXmlService;
+    private String baseURI;
+    private HttpClient httpClient;
+    private TstpXmlService tstpXmlService;
 
     public TstpCommunicatorImpl(String tstpAddress, int tstpPort, HttpClient httpClient, TstpXmlService tstpXmlService) {
         this.baseURI = "http://"+tstpAddress+":"+tstpPort+"/?Cmd=";
