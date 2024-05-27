@@ -44,18 +44,6 @@ public class TstpXmlServiceImpl implements TstpXmlService {
         return unmarshalXMlTsResponse(xml);
     }
 
-    private XmlTsResponse unmarshalXMlTsResponse(String xml) {
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(XmlTsResponse.class);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            StringReader reader = new StringReader(xml);
-
-            return (XmlTsResponse) unmarshaller.unmarshal(reader);
-        } catch (JAXBException e) {
-            throw new RuntimeException("There was an error unmarshalling the XmlTsResponse");
-        }
-    }
-
     @Override
     public String parseXmlPutRequest(List<Measurement> measurements) {
         byte[] binaryBlock = binaryService.encode(measurements);
@@ -88,6 +76,18 @@ public class TstpXmlServiceImpl implements TstpXmlService {
             return sw.toString();
         } catch (JAXBException e) {
             throw new RuntimeException("There was an error marshalling the XmlTsData");
+        }
+    }
+
+    private XmlTsResponse unmarshalXMlTsResponse(String xml) {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(XmlTsResponse.class);
+            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            StringReader reader = new StringReader(xml);
+
+            return (XmlTsResponse) unmarshaller.unmarshal(reader);
+        } catch (JAXBException e) {
+            throw new RuntimeException("There was an error unmarshalling the XmlTsResponse");
         }
     }
 
