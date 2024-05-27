@@ -3,7 +3,6 @@ package com.stm.pegelhub.connector.tstp.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.ByteBuffer;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,12 +11,20 @@ import java.util.List;
 
 import com.stm.pegelhub.connector.tstp.service.TstpBinaryService;
 import com.stm.pegelhub.lib.model.Measurement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TstpBinaryServiceImpl implements TstpBinaryService {
+    private static final Logger LOG = LoggerFactory.getLogger(TstpBinaryServiceImpl.class);
 
     @Override
     public List<Measurement> decode(byte[] toDecode) {
         List<Measurement> measurementList = new ArrayList<>();
+
+        if(toDecode.length % 12 != 0){
+            LOG.info("Binary array has an invalid length - measurements are not parsed");
+            return measurementList;
+        }
 
         // can probably be done with one loop, but I don't have enough time to change it (something with modulo should work)
         for (int j = 0; j < toDecode.length; j = j + 12) {
@@ -104,13 +111,13 @@ public class TstpBinaryServiceImpl implements TstpBinaryService {
             // Byte 7
             dateBytes[0] = (byte) 0;
             // Byte 6
-            dateBytes[1] = (byte) ((timestamp.getYear() >> 7) & 0x0F);
+            dateBytes[1] = (byte) ((timestamp.getYear() >> 8) & 0x0F);
             // Byte 5
             dateBytes[2] = (byte) (timestamp.getYear() & 0xFF);
             // Byte 4
             dateBytes[3] = (byte) (timestamp.getMonthValue() & 0x0F);
             // Byte 3
-            dateBytes[4] = (byte) (timestamp.getDayOfMonth() & 0x0F);
+            dateBytes[4] = (byte) (timestamp.getDayOfMonth() & 0x1F);
             // Byte 2
             dateBytes[5] = (byte) (timestamp.getHour() & 0xFF);
             // Byte 1
