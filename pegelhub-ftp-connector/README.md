@@ -34,6 +34,22 @@ These steps are recommended to ensure that the project has the correct initial s
 * After a successful build a `pegelhub-ftp-connector-2023.12.jar` file will be added to
   the `pegelhub-ftp-connector/target` folder, besides the already existing `original-pegelhub-ftp-connector-2023.12.jar`
 
+### Organise Files
+
+* Make sure you have a `config.properties` and the `properties.yaml` File in the correct
+  folder: `../pegelhub-ftp-connector/src/main/resources`
+* Define the corresponding properties to your needs:
+    * The `properties.yaml` file stores information about the received data, including the provider and the needed
+      API-Key for communication between the Pegelhub-Core and the FTP-Connector
+        * If you want the files in another directory, be sure to provide the correct path
+    * In `properties.yaml` File change the following:
+        * apiToken --> "generatedUniqueApiToken" (for generating a new Token, please refer to the Postman-Collection
+          Documentation / Pegelhub-Library)
+        * lastTokenRefresh --> make adjustments to the date, hour and minute mark depending on when you created the
+          token
+    * For further explanation of the config properties refer to "Connector Options (Config Properties)" or "How to use"
+      below.
+
 ### Build and save the pegelhub-ftp-connector docker image:
 
 * Open the project in the correct folder (`../pegelhub-ftp-connector`)
@@ -46,15 +62,8 @@ To ensure that the image was built, execute `docker images` to show a list of bu
 
 * Open the project in the correct folder (`../pegelhub-ftp-connector`)
 * In Terminal, load the docker image with `docker load -i ftp-connector`
-* Be sure that the `properties.yaml` and `config.properties` Files are in the same folder. In the following example
-  they are both located under `./src/main/resources`
-    * The `properties.yaml` file stores information about the received data, including the provider and the needed
-      API-Key for communication between the Pegelhub-Core and the FTP-Connector
-    * If you want the files in another directory, be sure to provide the correct path
-* In `properties.yaml` File change the following:
-    * apiToken --> "generatedApiToken" (for generating a new Token, please refer to the Postman-Collection
-      Documentation)
-    * lastTokenRefresh --> make adjustments to the date, hour and minute mark
+* Be sure that the `properties.yaml` and `config.properties` Files are in the same folder and configured respectively.
+  In this example they are both located under `./src/main/resources`
 * Run the container with `docker run -v .\src\main\resources\:/app/files pegelhub-ftp-connector`
 
 ### If you want to run the container on a server (Ubuntu):
@@ -73,17 +82,27 @@ To ensure that the container is running, execute `docker ps` to show a list of a
 To stop a running container, execute `docker stop yourContainerID`.
 To remove a container, execute `docker rm yourContainerID`
 
-For further operations with docker refer to the [official documentation](https://docs.docker.com/reference/). 
+For further operations with docker refer to the [official documentation](https://docs.docker.com/reference/).
 
 ## How to use
+
+Read the readme in the postman collection folder on how to generate an api token.
+`apiToken`s cannot be reused for applications using the API-Client. It must be unique for each connector instance.
+
+1) Build the Maven Project pegelhub-ftp-connector
+2) Open `config.properties`:
+    * Set your desired configurations
+3) Open `sink_properties.yaml`:
+    * Set a valid API Token and update the timestamp to the time of creation (change Date, Hour, Minute mark)
+    * Set your desired configurations
+4) Organise all Files into one folder (`./src/main/resources`)
+5) Build the Docker Images and Containers
+6) Run the Containers on your desired Machine (Local/Server)
 
 The FTP-Connector is capable of parsing .asc and .zrxp data. However, if you are planning on receiving both types of
 data, you will need two separate instances of the FTP-Connector.
 
-1. Make sure you have a `config.properties` and the `properties.yaml` File in the correct
-   folder: `../pegelhub-ftp-connector/src/main/resources`
-2. Define the corresponding properties to your needs:
-    * For further explanation of the config properties refer to "Connector Options (Config Properties)" below.
+### Example for config.properties
 
 As an example, valid properties for a zrxp-file-reading FTP Connector could be:
 
