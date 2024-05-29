@@ -92,7 +92,7 @@ Read the readme in the postman collection folder on how to generate an api token
 1) Build the Maven Project pegelhub-ftp-connector
 2) Open `config.properties`:
     * Set your desired configurations
-3) Open `sink_properties.yaml`:
+3) Open `properties.yaml`:
     * Set a valid API Token and update the timestamp to the time of creation (change Date, Hour, Minute mark)
     * Set your desired configurations
 4) Organise all Files into one folder (`./src/main/resources`)
