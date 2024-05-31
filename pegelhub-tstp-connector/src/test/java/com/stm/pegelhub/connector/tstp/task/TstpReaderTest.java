@@ -13,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,54 +38,33 @@ class TstpReaderTest {
     @Test
     void testRun_withValidData_sendsMeasurementsToCore() {
         String zrid = "test_zrid";
-        Instant maxFocusEnd = Instant.now();
 
         when(tstpCatalogService.getZrid()).thenReturn(zrid);
-        when(tstpCatalogService.getMaxFocusEnd()).thenReturn(maxFocusEnd);
-        when(tstpCommunicator.getMeasurements(eq(zrid), any(Instant.class), eq(maxFocusEnd)))
+        when(tstpCommunicator.getMeasurements(eq(zrid), any(Instant.class), any(Instant.class)))
                 .thenReturn(List.of(new Measurement()));
 
         tstpReader.run();
 
         verify(tstpCatalogService, times(1)).getZrid();
-        verify(tstpCatalogService, times(1)).getMaxFocusEnd();
-        verify(tstpCommunicator, times(1)).getMeasurements(eq(zrid), any(Instant.class), eq(maxFocusEnd));
+        verify(tstpCommunicator, times(1)).getMeasurements(eq(zrid), any(Instant.class), any(Instant.class));
         verify(phCommunicator, times(1)).sendMeasurements(anyList());
     }
 
     @Test
     void testRun_withEmptyMeasurements_doesNotSendToCore() throws Exception {
         String zrid = "test_zrid";
-        Instant maxFocusEnd = Instant.now();
 
         when(tstpCatalogService.getZrid()).thenReturn(zrid);
-        when(tstpCatalogService.getMaxFocusEnd()).thenReturn(maxFocusEnd);
-        when(tstpCommunicator.getMeasurements(eq(zrid), any(Instant.class), eq(maxFocusEnd)))
+        when(tstpCommunicator.getMeasurements(eq(zrid), any(Instant.class), any(Instant.class)))
                 .thenReturn(Collections.emptyList());
 
         tstpReader.run();
 
         verify(tstpCatalogService, times(1)).getZrid();
-        verify(tstpCatalogService, times(1)).getMaxFocusEnd();
-        verify(tstpCommunicator, times(1)).getMeasurements(eq(zrid), any(Instant.class), eq(maxFocusEnd));
+        verify(tstpCommunicator, times(1)).getMeasurements(eq(zrid), any(Instant.class), any(Instant.class));
         verify(phCommunicator, times(0)).sendMeasurements(anyList());
     }
 
-    @Test
-    void testRun_lookBackTimestampAfterMaxFocusEnd_logsInfo() {
-        String zrid = "test_zrid";
-        Instant maxFocusEnd = Instant.now().minus(48, ChronoUnit.HOURS);
-
-        when(tstpCatalogService.getZrid()).thenReturn(zrid);
-        when(tstpCatalogService.getMaxFocusEnd()).thenReturn(maxFocusEnd);
-
-        tstpReader.run();
-
-        verify(tstpCatalogService, times(1)).getZrid();
-        verify(tstpCatalogService, times(1)).getMaxFocusEnd();
-        verify(tstpCommunicator, times(0)).getMeasurements(anyString(), any(Instant.class), any(Instant.class));
-        verify(phCommunicator, times(0)).sendMeasurements(anyList());
-    }
 
     @Test
     void testCancel_closesCommunicator() throws Exception {

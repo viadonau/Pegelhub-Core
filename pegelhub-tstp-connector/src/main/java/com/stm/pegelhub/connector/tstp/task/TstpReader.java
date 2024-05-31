@@ -36,21 +36,15 @@ public class TstpReader extends TimerTask {
     public void run() {
         try {
             String zrid = tstpCatalogService.getZrid();
-            Instant lookBackTimestamp = getLookBackTimestamp();
-            Instant maxFocusEnd = tstpCatalogService.getMaxFocusEnd();
             LOG.info("ZRID gotten from catalog: " + zrid);
 
-            if (lookBackTimestamp.isBefore(maxFocusEnd)) {
-                List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid, getLookBackTimestamp(), maxFocusEnd);
-                LOG.info("Read in measurements from tstp server");
-                if (!measurements.isEmpty()) {
-                    phCommunicator.sendMeasurements(measurements);
-                    LOG.info("Sent measurements to core");
-                } else {
-                    LOG.info("Measurement List is empty - nothing was sent to the core");
-                }
+            List<Measurement> measurements = tstpCommunicator.getMeasurements(zrid, getLookBackTimestamp(), Instant.now());
+            LOG.info("Read in measurements from tstp server");
+            if (!measurements.isEmpty()) {
+                phCommunicator.sendMeasurements(measurements);
+                LOG.info("Sent measurements to core");
             } else {
-                LOG.info("MAXFOCUS-End (where the time series ends) is before the timestamp to start reading from");
+                LOG.info("Measurement List is empty - nothing was sent to the core");
             }
         } catch (Exception e) {
             LOG.error("Unhandled Exception was thrown!", e);
