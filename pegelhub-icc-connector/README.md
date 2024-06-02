@@ -14,8 +14,8 @@ Prerequisites to install and use the ICC-Connector are:
 * Internet access (communication with server)
 * Docker ([e.g. Docker Desktop](https://docs.docker.com/get-docker/)) (current working version: 4.30.0)
 
-You might need special (admin) permissions for executing the tasks below. For further details refer to Possible errors /
-Troubleshooting
+You might need special (admin) permissions for executing the tasks below. For further details refer to [Possible errors /
+Troubleshooting](#possible-errors--troubleshooting)
 
 ## Setup
 
@@ -54,7 +54,7 @@ These steps are recommended to ensure that the project has the correct initial s
           Documentation / Pegelhub-Library)
         * lastTokenRefresh --> make adjustments to the date, hour and minute mark depending on when you created the
           token
-    * For further explanation of the config properties refer to "Connector Options (Config Properties)" below.
+    * For further explanation of the config properties refer to [Connector Options (Config Properties)](#connector-options-config-properties) below.
 
 ### Build and save the pegelhub-icc-connector docker image:
 
