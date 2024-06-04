@@ -113,7 +113,7 @@ As an example, valid properties for a zrxp-file-reading FTP Connector could be:
 * The password is securePassword123
 * There is no special path to the server data, therefor we use `/` (otherwise add the direct path)
 * The expected data type is `zrxp`
-* The time interval is 20 seconds
+* The time interval is 15 minutes
 
 The `config.properties` File should therefore look like this:
 
@@ -126,7 +126,7 @@ ftp.user=pegelReader
 ftp.password=securePassword123
 ftp.path=/
 parser.type=zrxp
-read.delay=20s
+read.delay=15m
 ```
 
 ## Connector Options (Config Properties)
