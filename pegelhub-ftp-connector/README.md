@@ -61,12 +61,11 @@ To ensure that the image was built, execute `docker images` to show a list of bu
 ### If you want to run the container locally:
 
 * Open the project in the correct folder (`../pegelhub-ftp-connector`)
-* In Terminal, load the docker image with `docker load -i ftp-connector`
 * Be sure that the `properties.yaml` and `config.properties` Files are in the same folder and configured respectively.
   In this example they are both located under `./src/main/resources`
 * Run the container with `docker run -v .\src\main\resources\:/app/files pegelhub-ftp-connector`
 
-### If you want to run the container on a server (Ubuntu):
+### If you want to run the container on a server (Linux):
 
 * Make sure that your server meets the requirements of the Prerequisites
 * On your local machine, open the project in the correct folder (`../pegelhub-ftp-connector`)
@@ -134,39 +133,39 @@ read.delay=20s
 
 These arguments are passed at the start of the FTP-Connector and have to be in the exact order as listed below:
 
-### core.address (formerly known as coreAddress)
+### core.address
 
 * The address of the connector which is used to communicate with the Pegelhub-Core application
 
-### core.port (formerly known as corePort)
+### core.port
 
 * The port of the given coreAddress
 
-### ftp.address (formerly known as pegelAddress / gaugeAddress)
+### ftp.address
 
 * The address of the FTP-Server, which provides the data
 
-### ftp.port (formerly known as pegelPort / gaugePort)
+### ftp.port
 
 * The port of the FTP-Server, which provides the data
 
-### ftp.user (formerly known as username)
+### ftp.user
 
 * The user, which is used for authentication purposes
 
-### ftp.password (formerly known as password)
+### ftp.password
 
 * The password, which is used by the user to authenticate himself
 
-### ftp.path (formerly known as path)
+### ftp.path
 
 * The (absolute) path to the receivable data on the FTP-Server. If no special path is given, use `/`
 
-### parser.type (formerly known as parserType)
+### parser.type
 
 * The parserType defines, which type of data can be parsed. Choose one of the two options: `asc` or `zrxp`
 
-### read.delay (formerly known as readDelay)
+### read.delay
 
 * The readDelay defines the time interval in which the data is sent to the Core Application. The proper format
   is `number[s/m/h]` where `s`, `m` and `h` are *case-insensitive* and stand for seconds, minutes and hours.

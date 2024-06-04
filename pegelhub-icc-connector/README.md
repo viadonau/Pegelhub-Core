@@ -67,12 +67,11 @@ To ensure that the image was built, execute `docker images` to show a list of bu
 ### If you want to run the container locally:
 
 * Open the project in the correct folder (`../pegelhub-icc-connector`)
-* In Terminal, load the docker image with `docker load -i icc-connector`
 * Be sure that the `sink_properties.yaml`, `source_properties.yaml` and `config.properties` Files are in the same
   folder and configured respectively. In this example they are all located under `./src/main/resources`
 * Run the container with `docker run -v .\src\main\resources\:/app/files pegelhub-icc-connector`
 
-### If you want to run the container on a server (Ubuntu):
+### If you want to run the container on a server (Linux):
 
 * Make sure that your server meets the requirements of the Prerequisites
 * On your local machine, open the project in the correct folder (`../pegelhub-icc-connector`)
