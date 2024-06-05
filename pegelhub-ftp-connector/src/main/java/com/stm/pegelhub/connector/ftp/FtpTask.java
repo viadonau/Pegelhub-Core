@@ -26,7 +26,9 @@ public class FtpTask extends TimerTask {
     private final ConnectorOptions conOpts;
     private final PegelHubCommunicator communicator;
     private final Parser parser;
-    private InfluxID influxID;
+
+    //TODO rework influxId or remove completely
+//    private InfluxID influxID;
     private ApplicationProperties properties;
 
     public FtpTask(FTPClient ftp, ConnectorOptions conOpts, PegelHubCommunicator communicator, Parser parser) {
@@ -35,7 +37,7 @@ public class FtpTask extends TimerTask {
         this.communicator = communicator;
         this.parser = parser;
         this.properties = new ApplicationPropertiesImpl(conOpts.propertiesFile());
-        this.influxID = new InfluxID(communicator, properties);
+//        this.influxID = new InfluxID(communicator, properties);
         this.durationToLookBack = conOpts.readDelay();
     }
 
@@ -175,15 +177,22 @@ public class FtpTask extends TimerTask {
 
     private Stream<Measurement> convertEntryToMeasurementStream(Entry e) {
         return e.getValues().entrySet().stream().map(value -> {
-            if (!Util.canParseDouble(value.getValue())) {
+            // TODO the check if the location is correct should be refactored into the parser or something like that
+            if (!Util.canParseDouble(value.getValue()) && !Util.canParseDouble(e.getInfos().get("location"))) {
                 return null;
             }
+
+            if(Integer.parseInt(e.getInfos().get("location")) != (properties.getSupplier().stationId())){
+                return null;
+            }
+
             var m = new Measurement();
             m.setTimestamp(value.getKey().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             m.getFields().put("value", Double.parseDouble(value.getValue()));
-            m.getFields().put("ID", (double) influxID.getIDValue());
+            // isn't resetting at the end of each day, still needs to be reworked
+//            m.getFields().put("ID", (double) influxID.getIDValue());
             m.getInfos().putAll(e.getInfos());
-            influxID.addID();
+//            influxID.addID();
             return m;
         }).filter(Objects::nonNull);
     }
