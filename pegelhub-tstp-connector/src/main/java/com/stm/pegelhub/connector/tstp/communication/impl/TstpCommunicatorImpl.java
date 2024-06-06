@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @NoArgsConstructor
@@ -74,6 +75,7 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
     @Override
     public void sendMeasurements(String zrid, List<Measurement> measurements) {
         URI uri = URI.create(String.format(baseURI+"PUT&ZRID=%s",zrid));
+        measurements.sort(Comparator.comparing(Measurement::getTimestamp));
         String requestBody = tstpXmlService.parseXmlPutRequest(measurements);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -84,7 +86,6 @@ public class TstpCommunicatorImpl implements TstpCommunicator {
             String responseBody = httpClient.send(request, HttpResponse.BodyHandlers.ofString()).body();
             XmlTsResponse response = tstpXmlService.parseXmlPutResponse(responseBody);
 
-            LOG.info(responseBody);
             if(response.getMessage().contains("confirm")){
                 LOG.info("Successfully sent data to the TSTP-Server");
             } else {
