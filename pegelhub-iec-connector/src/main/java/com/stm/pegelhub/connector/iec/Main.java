@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
-    private static final String CONFIG = "W:\\Tech\\ViaDonau\\WehrNussdorf_22182\\Unterlagen\\Pegelhub\\PHv0.3\\pegelhub-iec-connector\\src\\main\\resources\\config.properties";
+    private static final String CONFIG = "/app/files/config.properties";
 
     private static Duration readDelay(String delay) {
         String number = delay.substring(0, delay.length() - 1);
