@@ -24,7 +24,7 @@ public class SampleServer {
 
     private static final Logger LOG = LoggerFactory.getLogger(ServerListener.class);
 
-    private static final String ADRESS = "127.0.0.2";
+    private static final String ADRESS = "0.0.0.0";
     private static final int PORT = 2404;
     private static final int IAO_LENGTH = 3;
     private static final int COT_LENTH = 2;
