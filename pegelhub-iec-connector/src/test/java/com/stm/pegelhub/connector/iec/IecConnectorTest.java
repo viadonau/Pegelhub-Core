@@ -22,7 +22,7 @@ class IecConnectorTest {
     private PegelHubCommunicator mockCommunicator;
     private MockedStatic<PegelHubCommunicatorFactory> communicatorFactoryMock;
 
-    /*@BeforeEach
+    @BeforeEach
     void setUp() throws Exception {
         mockCommunicator = mock(PegelHubCommunicator.class);
         communicatorFactoryMock = Mockito.mockStatic(PegelHubCommunicatorFactory.class);
@@ -58,5 +58,5 @@ class IecConnectorTest {
 
         verify(mockCommunicator, atLeastOnce())
                 .getMeasurementsOfStation(eq("123"), any());
-    }*/
+    }
 }

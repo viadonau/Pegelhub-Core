@@ -3,7 +3,9 @@ package com.stm.pegelhub.connector.iec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.time.Duration;
@@ -115,5 +117,32 @@ public class ConfigLoader {
             throw new IllegalArgumentException("Missing or empty property: " + key);
         }
         return value;
+    }
+    /**
+     * Reads command-line arguments and returns a ConnectorOptions object.
+     * @param strings Command-line arguments
+     * @return A ConnectorOptions object
+     * @throws IOException If the file cannot be opened or read.
+     */
+    public static ConnectorOptions readArguments(String[] strings) {
+        try {
+            if (strings.length > 0) {
+                String configPath = strings[0];
+                // Prüfen, ob die angegebene Datei existiert
+                File configFile = new File(configPath);
+                if (!configFile.exists()) {
+                    LOG.error("Config file not found: {}", configPath);
+                    throw new FileNotFoundException("Config file not found: " + configPath);
+                }
+                LOG.info("Loading config from: {}", configPath);
+                return fromArgs(strings);
+            } else {
+                LOG.error("No config file specified");
+                throw new IllegalArgumentException("No config file specified");
+            }
+        } catch (IOException e) {
+            LOG.error("Error reading config: {}", e.getMessage(), e);
+            throw new RuntimeException("Error reading config", e);
+        }
     }
 }
