@@ -185,8 +185,8 @@ public class IecConnector implements AutoCloseable {
         if (communicator != null) {
             return communicator;
         }
-        System.out.println(String.format("http://%s:%s/", conOpt.coreAddress().getHostAddress(), conOpt.corePort()));
-        return PegelHubCommunicatorFactory.create(new URL(String.format("http://%s:%s/", conOpt.coreAddress().getHostAddress(), conOpt.corePort())), conOpt.propertyFileName());
+        System.out.println(String.format("https://%s:%s/", conOpt.coreAddress().getHostAddress(), conOpt.corePort()));
+        return PegelHubCommunicatorFactory.create(new URL(String.format("https://%s:%s/", conOpt.coreAddress().getHostAddress(), conOpt.corePort())), conOpt.propertyFileName());
     }
 
     @Override

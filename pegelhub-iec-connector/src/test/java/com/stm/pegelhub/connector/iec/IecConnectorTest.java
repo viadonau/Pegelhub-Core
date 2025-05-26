@@ -9,16 +9,22 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import java.util.Collections;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 class IecConnectorTest {
 
     private IecConnector connector;
+    private ConnectorOptions options;
     private PegelHubCommunicator mockCommunicator;
     private MockedStatic<PegelHubCommunicatorFactory> communicatorFactoryMock;
 
@@ -26,15 +32,14 @@ class IecConnectorTest {
     void setUp() throws Exception {
         mockCommunicator = mock(PegelHubCommunicator.class);
         communicatorFactoryMock = Mockito.mockStatic(PegelHubCommunicatorFactory.class);
-        communicatorFactoryMock.when(() -> PegelHubCommunicatorFactory.create(any(), any()))
+        communicatorFactoryMock.when(() -> PegelHubCommunicatorFactory.create(any(URL.class), anyString()))
                 .thenReturn(mockCommunicator);
 
         String configPath = "src/test/resources/ConnectorTest.properties";
-        ConnectorOptions options = ConfigLoader.readArguments(new String[]{configPath});
+        options = ConfigLoader.readArguments(new String[]{configPath});
 
         when(mockCommunicator.getSystemTime())
                 .thenReturn(Timestamp.valueOf(LocalDateTime.now()));
-
         when(mockCommunicator.getMeasurementsOfStation(eq("123"), any()))
                 .thenReturn(List.of(
                         new Measurement(
@@ -44,12 +49,19 @@ class IecConnectorTest {
                 ));
 
         connector = new IecConnector(options);
+
+        communicatorFactoryMock.clearInvocations();
     }
+
 
     @AfterEach
     void tearDown() {
-        connector.close();
-        communicatorFactoryMock.close();
+        if (connector != null) {
+            connector.close();
+        }
+        if (communicatorFactoryMock != null) {
+            communicatorFactoryMock.close();
+        }
     }
 
     @Test
@@ -58,5 +70,29 @@ class IecConnectorTest {
 
         verify(mockCommunicator, atLeastOnce())
                 .getMeasurementsOfStation(eq("123"), any());
+    }
+
+    @Test
+    void testGetCommunicator() throws Exception {
+        Field commField = IecConnector.class.getDeclaredField("communicator");
+        commField.setAccessible(true);
+        commField.set(connector, null);
+
+        Method getComm = IecConnector.class.getDeclaredMethod("getCommunicator", ConnectorOptions.class);
+        getComm.setAccessible(true);
+        PegelHubCommunicator returned = (PegelHubCommunicator) getComm.invoke(connector, options);
+
+        assertSame(mockCommunicator, returned);
+
+        communicatorFactoryMock.verify(() ->
+                        PegelHubCommunicatorFactory.create(
+                                new URL(String.format("https://%s:%d/",
+                                        options.coreAddress().getHostAddress(),
+                                        options.corePort()
+                                )),
+                                options.propertyFileName()
+                        ),
+                times(1)
+        );
     }
 }
