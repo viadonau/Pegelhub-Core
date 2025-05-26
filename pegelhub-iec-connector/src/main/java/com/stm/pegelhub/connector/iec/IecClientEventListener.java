@@ -89,7 +89,7 @@ public class IecClientEventListener implements ConnectionEventListener {
      * Collects and sends telemetry information to the Pegelhub Core.
      * Uses local IP and default values for battery and environmental sensors.
      */
-    private void sendTelemetry() {
+    void sendTelemetry() {
         Supplier sup = communicator.getSuppliers().stream()
                 .filter(s -> s.getStationNumber().equals(properties.getSupplier().stationNumber()))
                 .findFirst().orElse(null);

@@ -3,6 +3,7 @@ package com.stm.pegelhub.connector.iec;
 import com.stm.pegelhub.lib.InfluxID;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.internal.ApplicationPropertiesImpl;
+import com.stm.pegelhub.lib.internal.dto.SupplierSendDto;
 import com.stm.pegelhub.lib.model.Measurement;
 import com.stm.pegelhub.lib.model.Supplier;
 import org.openmuc.j60870.ASdu;
@@ -90,8 +91,16 @@ public class AsduMeasurementHandler {
      * @return the matched Supplier or null if not found
      */
     private Supplier findSupplier() {
+        SupplierSendDto configuredSupplier = properties.getSupplier();
+        if (configuredSupplier == null || configuredSupplier.stationNumber() == null) {
+            LOG.info("Supplier or Station Number not configured");
+            return null;
+        }
+
+        String configuredStationNumber = configuredSupplier.stationNumber();
+
         return communicator.getSuppliers().stream()
-                .filter(s -> s.getStationNumber().equals(properties.getSupplier().stationNumber()))
+                .filter(s -> configuredStationNumber.equals(s.getStationNumber()))
                 .findFirst()
                 .orElse(null);
     }
