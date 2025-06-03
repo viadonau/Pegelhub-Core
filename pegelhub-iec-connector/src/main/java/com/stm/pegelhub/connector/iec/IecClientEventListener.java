@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -87,33 +89,57 @@ public class IecClientEventListener implements ConnectionEventListener {
 
     /**
      * Collects and sends telemetry information to the Pegelhub Core.
-     * Uses local IP and default values for battery and environmental sensors.
      */
     void sendTelemetry() {
+        LOG.info("********* Start sending telemetry data *********");
         Supplier sup = communicator.getSuppliers().stream()
                 .filter(s -> s.getStationNumber().equals(properties.getSupplier().stationNumber()))
                 .findFirst().orElse(null);
 
-        if (sup == null) return;
-
-        try {
-            //this is still hardcoded and needs to be specified
-            Telemetry telemetry = new Telemetry();
-            telemetry.setTimestamp(LocalDateTime.now());
-            telemetry.setMeasurement(sup.getId());
-            telemetry.setCycleTime(options.telemetryCycleTime().toMillis());
-            telemetry.setStationIPAddressExtern(InetAddress.getLocalHost().getHostAddress());
-            telemetry.setStationIPAddressIntern(InetAddress.getLocalHost().toString());
-            telemetry.setFieldStrengthTransmission(20.0);
-            telemetry.setTemperatureAir(20.0);
-            telemetry.setTemperatureWater(20.0);
-            telemetry.setPerformanceElectricityBattery(20.0);
-            telemetry.setPerformanceVoltageBattery(20.0);
-            telemetry.setPerformanceVoltageSupply(20.0);
-
-            communicator.sendTelemetry(telemetry);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if (sup == null) {
+            LOG.warn("No supplier found for station number: {}", properties.getSupplier().stationNumber());
+            return;
         }
+        String supplierId = sup.getId();
+        LOG.debug("Fetching telemetry for supplier ID: {}", supplierId);
+
+        Duration cycleTimeDuration = options.telemetryCycleTime();
+        long minutes = cycleTimeDuration.toMinutes();
+        String timespan = minutes + "m";
+        LOG.debug("Calculated timespan for getTelemetry: {}", timespan);
+
+        Collection<Telemetry> telemetryCollection = communicator.getTelemetry(timespan);
+        Telemetry fetchedTelemetry = telemetryCollection.stream()
+                .filter(t -> t.getMeasurement().equals(supplierId))
+                .findFirst()
+                .orElse(null);
+
+        Telemetry telemetryToSend = new Telemetry();
+        telemetryToSend.setMeasurement(sup.getId());
+        telemetryToSend.setCycleTime(options.telemetryCycleTime().toMillis());
+        try {
+            telemetryToSend.setStationIPAddressExtern(options.coreAddress().getHostAddress());
+            telemetryToSend.setStationIPAddressIntern(InetAddress.getLocalHost().toString());
+        } catch (UnknownHostException e) {
+            LOG.error("Error getting host address: {}", e.getMessage());
+        }
+        telemetryToSend.setTimestamp(LocalDateTime.now());
+
+        if (fetchedTelemetry != null) {
+            LOG.debug("Found telemetry data for supplier ID {}: {}", supplierId, fetchedTelemetry);
+            telemetryToSend.setTemperatureWater(fetchedTelemetry.getTemperatureWater());
+            telemetryToSend.setTemperatureAir(fetchedTelemetry.getTemperatureAir());
+            telemetryToSend.setPerformanceVoltageBattery(fetchedTelemetry.getPerformanceVoltageBattery());
+            telemetryToSend.setPerformanceVoltageSupply(fetchedTelemetry.getPerformanceVoltageSupply());
+            telemetryToSend.setPerformanceElectricityBattery(fetchedTelemetry.getPerformanceElectricityBattery());
+            telemetryToSend.setPerformanceElectricitySupply(fetchedTelemetry.getPerformanceElectricitySupply());
+            telemetryToSend.setFieldStrengthTransmission(fetchedTelemetry.getFieldStrengthTransmission());
+        }
+        else {
+            LOG.debug("No telemetry data found for supplier ID: {}", supplierId);
+        }
+
+        LOG.info("Sending telemetry data: {}", telemetryToSend);
+        communicator.sendTelemetry(telemetryToSend);
     }
 }

@@ -25,13 +25,19 @@ public class AsduMeasurementHandler {
     private final PegelHubCommunicator communicator;
     private final ApplicationPropertiesImpl properties;
     private final InfluxID influxID;
+    private final boolean isReadingFromIec;
 
     public AsduMeasurementHandler(PegelHubCommunicator communicator,
                                   ConnectorOptions options,
                                   ApplicationPropertiesImpl properties) {
         this.communicator = communicator;
         this.properties = properties;
-        this.influxID = new InfluxID(communicator, properties);
+        this.isReadingFromIec = options.isReadingFromIec();
+        if (isReadingFromIec) {
+            this.influxID = new InfluxID(communicator, properties);
+        } else {
+            this.influxID = null;
+        }
     }
 
     /**
@@ -49,8 +55,11 @@ public class AsduMeasurementHandler {
      * Extracts measurement data from ASdu of type M_ME_NB_1 and sends them to Pegelhub.
      * @param aSdu the received ASdu
      */
+    /**
+     * Extracts measurement data from ASdu of type M_ME_NB_1 and sends them to Pegelhub.
+     * @param aSdu the received ASdu
+     */
     private void handleMeasurement(ASdu aSdu) {
-        influxID.calculateID();
         List<Measurement> measurements = new ArrayList<>();
         Supplier supplier = findSupplier();
         if (supplier == null) return;
@@ -69,7 +78,7 @@ public class AsduMeasurementHandler {
                     Map.entry("ChannelUse", supplier.getChannelUse()),
                     Map.entry("Type", supplier.getChannelUse()),
                     Map.entry("Timetype", "TODO"),
-                    Map.entry("ID", String.valueOf(influxID.getIDValue())),
+                    Map.entry("ID", isReadingFromIec && influxID != null ? String.valueOf(influxID.getIDValue()) : "N/A"),
                     Map.entry("IOA", String.valueOf(ioa)),
                     Map.entry("UnNormalizedValue", String.valueOf(raw)),
                     Map.entry("Quality", quality),
@@ -78,8 +87,12 @@ public class AsduMeasurementHandler {
 
             Measurement measurement = new Measurement(fields, infos);
             measurements.add(measurement);
-            influxID.addID();
-
+            if (isReadingFromIec && influxID != null) {
+                influxID.addID();
+            }
+            else {
+                LOG.debug("Not in reading mode: Received measurement ASdu");
+            }
             LOG.info("Received IEC measurement: IOA={}, Value={}, Quality={}", ioa, value, quality);
         }
 
