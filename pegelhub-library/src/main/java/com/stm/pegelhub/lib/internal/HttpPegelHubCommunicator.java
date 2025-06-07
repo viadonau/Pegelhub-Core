@@ -254,6 +254,7 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
     @Override
     public Collection<Telemetry> getTelemetry(String timespan) {
         try {
+            ensureIsTaker();
             final URI uri = baseUrl.toURI().resolve(routeWithApiKey(telemetryRoute + timespan));
             final var http = new HttpGet(uri);
             LOG.debug("Executing GET request to URI: {}", uri);
@@ -281,6 +282,7 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
     @Override
     public Optional<Telemetry> getTelemetryByUUID(UUID uuid) {
         try {
+            ensureIsTaker();
             final URI uri = baseUrl.toURI().resolve(routeWithApiKey(telemetryRoute + "last/" + uuid.toString()));
             final var http = new HttpGet(uri);
 

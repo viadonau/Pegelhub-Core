@@ -10,6 +10,7 @@ import org.mockito.*;
 import org.openmuc.j60870.ASdu;
 import org.openmuc.j60870.Connection;
 
+import java.net.InetAddress;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -40,6 +41,8 @@ class IecClientEventListenerTest {
         MockitoAnnotations.openMocks(this);
         when(options.telemetryCycleTime()).thenReturn(Duration.ofSeconds(1));
         when(communicator.getSystemTime()).thenReturn(Timestamp.valueOf(LocalDateTime.now()));
+        InetAddress mockCoreAddress = InetAddress.getLoopbackAddress();
+        when(options.coreAddress()).thenReturn(mockCoreAddress);
     }
 
     /**
@@ -55,12 +58,12 @@ class IecClientEventListenerTest {
 
             @Override
             public void newASdu(ASdu aSdu) {
-                measurementHandler.handle(aSdu);
+                measurementHandler.processByType(aSdu);
             }
         };
 
         listenerWithMockedHandler.newASdu(mockAsdu);
-        verify(mockHandler, times(1)).handle(mockAsdu);
+        verify(mockHandler, times(1)).processByType(mockAsdu);
     }
 
     /**

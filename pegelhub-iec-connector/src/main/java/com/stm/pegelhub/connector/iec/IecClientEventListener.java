@@ -54,7 +54,7 @@ public class IecClientEventListener implements ConnectionEventListener {
      */
     @Override
     public void newASdu(ASdu aSdu) {
-        measurementHandler.handle(aSdu);
+        measurementHandler.processByType(aSdu);
     }
 
     /**
@@ -79,12 +79,17 @@ public class IecClientEventListener implements ConnectionEventListener {
      * Starts periodic telemetry data transmission to the core.
      */
     public void startSending() {
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                sendTelemetry();
-            }
-        }, 0, options.telemetryCycleTime().toMillis());
+        if (properties.getSupplier() != null) {
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    sendTelemetry();
+                }
+            }, 0, options.telemetryCycleTime().toMillis());
+            LOG.info("Telemetry sending activated, configured as supplier.");
+        } else {
+            LOG.warn("Telemetry sending skipped: Configured as Taker.");
+        }
     }
 
     /**
@@ -108,12 +113,6 @@ public class IecClientEventListener implements ConnectionEventListener {
         String timespan = minutes + "m";
         LOG.debug("Calculated timespan for getTelemetry: {}", timespan);
 
-        Collection<Telemetry> telemetryCollection = communicator.getTelemetry(timespan);
-        Telemetry fetchedTelemetry = telemetryCollection.stream()
-                .filter(t -> t.getMeasurement().equals(supplierId))
-                .findFirst()
-                .orElse(null);
-
         Telemetry telemetryToSend = new Telemetry();
         telemetryToSend.setMeasurement(sup.getId());
         telemetryToSend.setCycleTime(options.telemetryCycleTime().toMillis());
@@ -124,20 +123,6 @@ public class IecClientEventListener implements ConnectionEventListener {
             LOG.error("Error getting host address: {}", e.getMessage());
         }
         telemetryToSend.setTimestamp(LocalDateTime.now());
-
-        if (fetchedTelemetry != null) {
-            LOG.debug("Found telemetry data for supplier ID {}: {}", supplierId, fetchedTelemetry);
-            telemetryToSend.setTemperatureWater(fetchedTelemetry.getTemperatureWater());
-            telemetryToSend.setTemperatureAir(fetchedTelemetry.getTemperatureAir());
-            telemetryToSend.setPerformanceVoltageBattery(fetchedTelemetry.getPerformanceVoltageBattery());
-            telemetryToSend.setPerformanceVoltageSupply(fetchedTelemetry.getPerformanceVoltageSupply());
-            telemetryToSend.setPerformanceElectricityBattery(fetchedTelemetry.getPerformanceElectricityBattery());
-            telemetryToSend.setPerformanceElectricitySupply(fetchedTelemetry.getPerformanceElectricitySupply());
-            telemetryToSend.setFieldStrengthTransmission(fetchedTelemetry.getFieldStrengthTransmission());
-        }
-        else {
-            LOG.debug("No telemetry data found for supplier ID: {}", supplierId);
-        }
 
         LOG.info("Sending telemetry data: {}", telemetryToSend);
         communicator.sendTelemetry(telemetryToSend);

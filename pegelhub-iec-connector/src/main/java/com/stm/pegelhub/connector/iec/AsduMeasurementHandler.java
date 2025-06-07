@@ -1,6 +1,5 @@
 package com.stm.pegelhub.connector.iec;
 
-import com.stm.pegelhub.lib.InfluxID;
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.internal.ApplicationPropertiesImpl;
 import com.stm.pegelhub.lib.internal.dto.SupplierSendDto;
@@ -24,37 +23,26 @@ public class AsduMeasurementHandler {
 
     private final PegelHubCommunicator communicator;
     private final ApplicationPropertiesImpl properties;
-    private final InfluxID influxID;
-    private final boolean isReadingFromIec;
 
     public AsduMeasurementHandler(PegelHubCommunicator communicator,
                                   ConnectorOptions options,
                                   ApplicationPropertiesImpl properties) {
         this.communicator = communicator;
         this.properties = properties;
-        this.isReadingFromIec = options.isReadingFromIec();
-        if (isReadingFromIec) {
-            this.influxID = new InfluxID(communicator, properties);
-        } else {
-            this.influxID = null;
-        }
     }
 
     /**
      * Processes the received ASdu based on its type.
      * @param aSdu the received ASdu
      */
-    public void handle(ASdu aSdu) {
+    public void processByType(ASdu aSdu) {
         switch (aSdu.getTypeIdentification()) {
             case M_ME_NB_1 -> handleMeasurement(aSdu);
-            default -> logUnhandledType(aSdu);
+            default -> LOG.info("Unhandled ASdu Type: {}, Description: {}",
+                    aSdu.getTypeIdentification(), aSdu.getTypeIdentification().getDescription());
         }
     }
 
-    /**
-     * Extracts measurement data from ASdu of type M_ME_NB_1 and sends them to Pegelhub.
-     * @param aSdu the received ASdu
-     */
     /**
      * Extracts measurement data from ASdu of type M_ME_NB_1 and sends them to Pegelhub.
      * @param aSdu the received ASdu
@@ -78,7 +66,6 @@ public class AsduMeasurementHandler {
                     Map.entry("ChannelUse", supplier.getChannelUse()),
                     Map.entry("Type", supplier.getChannelUse()),
                     Map.entry("Timetype", "TODO"),
-                    Map.entry("ID", isReadingFromIec && influxID != null ? String.valueOf(influxID.getIDValue()) : "N/A"),
                     Map.entry("IOA", String.valueOf(ioa)),
                     Map.entry("UnNormalizedValue", String.valueOf(raw)),
                     Map.entry("Quality", quality),
@@ -86,13 +73,7 @@ public class AsduMeasurementHandler {
             );
 
             Measurement measurement = new Measurement(fields, infos);
-            measurements.add(measurement);
-            if (isReadingFromIec && influxID != null) {
-                influxID.addID();
-            }
-            else {
-                LOG.debug("Not in reading mode: Received measurement ASdu");
-            }
+
             LOG.info("Received IEC measurement: IOA={}, Value={}, Quality={}", ioa, value, quality);
         }
 
@@ -116,14 +97,6 @@ public class AsduMeasurementHandler {
                 .filter(s -> configuredStationNumber.equals(s.getStationNumber()))
                 .findFirst()
                 .orElse(null);
-    }
-
-    /**
-     * Logs ASdus that are not handled by the system.
-     * @param aSdu the unhandled ASdu
-     */
-    private void logUnhandledType(ASdu aSdu) {
-        LOG.info("Unhandled ASdu Type: {}, Description: {}", aSdu.getTypeIdentification(), aSdu.getTypeIdentification().getDescription());
     }
 }
 
