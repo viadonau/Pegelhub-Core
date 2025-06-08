@@ -2,13 +2,18 @@ package com.stm.pegelhub.connector.iec;
 
 import com.stm.pegelhub.lib.PegelHubCommunicator;
 import com.stm.pegelhub.lib.PegelHubCommunicatorFactory;
+import com.stm.pegelhub.lib.internal.ApplicationPropertiesImpl;
+import com.stm.pegelhub.lib.internal.dto.SupplierSendDto;
 import com.stm.pegelhub.lib.model.Measurement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
+import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 import java.sql.Timestamp;
@@ -19,18 +24,24 @@ import static org.mockito.Mockito.*;
 class IecConnectorTest {
 
     private IecConnector connector;
-    private PegelHubCommunicator mockCommunicator;
     private MockedStatic<PegelHubCommunicatorFactory> communicatorFactoryMock;
 
-    /*@BeforeEach
+    @Mock
+    private PegelHubCommunicator mockCommunicator;
+    @Mock
+    private org.openmuc.j60870.Connection mockIecConnection;
+    @Mock
+    private ApplicationPropertiesImpl mockApplicationProperties;
+
+    @BeforeEach
     void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
         mockCommunicator = mock(PegelHubCommunicator.class);
         communicatorFactoryMock = Mockito.mockStatic(PegelHubCommunicatorFactory.class);
         communicatorFactoryMock.when(() -> PegelHubCommunicatorFactory.create(any(), any()))
                 .thenReturn(mockCommunicator);
 
         String configPath = "src/test/resources/ConnectorTest.properties";
-        ConnectorOptions options = ConfigLoader.readArguments(new String[]{configPath});
 
         when(mockCommunicator.getSystemTime())
                 .thenReturn(Timestamp.valueOf(LocalDateTime.now()));
@@ -42,8 +53,25 @@ class IecConnectorTest {
                                 Collections.singletonMap("info", "test")
                         )
                 ));
+        SupplierSendDto dummySupplierSendDto = new SupplierSendDto(
+                "STATION_NUMBER_TEST",
+                123,
+                "Station Name",
+                "Water Name",
+                'A',
+                null,
+                null,
+                null, null, null, null,
+                null, null, null, null,
+                null, null, null, null,
+                null, null, null, null,
+                null, null, null, null,
+                null, null, null, null, null, null
+        );
+        when(mockApplicationProperties.getSupplier()).thenReturn(dummySupplierSendDto);
+        ConnectorOptions options = ConfigLoader.readArguments(new String[]{configPath});
 
-        connector = new IecConnector(options);
+        connector = new IecConnector(mockCommunicator, mockIecConnection, mockApplicationProperties, options);
     }
 
     @AfterEach
@@ -58,5 +86,5 @@ class IecConnectorTest {
 
         verify(mockCommunicator, atLeastOnce())
                 .getMeasurementsOfStation(eq("123"), any());
-    }*/
+    }
 }
