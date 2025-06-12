@@ -255,9 +255,9 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
     public Collection<Telemetry> getTelemetry(String timespan) {
         try {
             ensureIsTaker();
-
             final URI uri = baseUrl.toURI().resolve(routeWithApiKey(telemetryRoute + timespan));
             final var http = new HttpGet(uri);
+            LOG.debug("Executing GET request to URI: {}", uri);
 
             return client.execute(http, response -> {
                 var json = EntityUtils.toString(response.getEntity());
@@ -274,6 +274,7 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
                 return new TelemetryCollectionReceiveDto(gson.fromJson(json, mapType)).toTelemetryCollection();
             });
         } catch (Exception e) {
+            LOG.error("Exception during telemetry fetch: {}", e.getMessage(), e);
             throw new RuntimeException(e);
         }
     }
@@ -282,7 +283,6 @@ public class HttpPegelHubCommunicator implements PegelHubCommunicator {
     public Optional<Telemetry> getTelemetryByUUID(UUID uuid) {
         try {
             ensureIsTaker();
-
             final URI uri = baseUrl.toURI().resolve(routeWithApiKey(telemetryRoute + "last/" + uuid.toString()));
             final var http = new HttpGet(uri);
 
