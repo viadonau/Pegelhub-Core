@@ -69,7 +69,6 @@ public class IecClientEventListener implements ConnectionEventListener {
                 try {
                     enumNetworkInterfaces = NetworkInterface.getNetworkInterfaces();
                 } catch (SocketException ex) {
-                    throw new RuntimeException(ex);
                 }
 
                 InetAddress newSiteLocal = null;
@@ -117,8 +116,8 @@ public class IecClientEventListener implements ConnectionEventListener {
                         Telemetry tel = new Telemetry();
                         tel.setTimestamp(LocalDateTime.now());
                         tel.setMeasurement(sup.getId());
-                        tel.setStationIPAddressIntern(newSiteLocal.getHostAddress());
-                        tel.setStationIPAddressExtern(newPublicFacing.getHostAddress());
+                        tel.setStationIPAddressIntern(newSiteLocal != null ? newSiteLocal.getHostAddress() : "127.0.0.1");
+                        tel.setStationIPAddressExtern(newPublicFacing != null ? newPublicFacing.getHostAddress() : "0.0.0.0");
                         tel.setCycleTime(cycleTime.toMillis());
                         siteLocal = newSiteLocal;
                         publicFacing = newPublicFacing;
